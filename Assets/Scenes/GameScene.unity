@@ -859,6 +859,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57fcc9a396287724abc535f643835898, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  edgeBuffer: 40
 --- !u!1 &879297816
 GameObject:
   m_ObjectHideFlags: 0
@@ -967,7 +968,7 @@ MonoBehaviour:
   player: {fileID: 85990851}
   cursor: {fileID: 877128527}
   verticalOffset: {x: 0, y: 5, z: 0}
-  playerForwardOffset: 0.5
+  maxForwardOffset: 0
   lerpSpeed: 15
 --- !u!1 &1447361273
 GameObject:
