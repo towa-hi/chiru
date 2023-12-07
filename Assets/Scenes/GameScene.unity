@@ -967,8 +967,8 @@ MonoBehaviour:
   player: {fileID: 85990851}
   cursor: {fileID: 877128527}
   verticalOffset: {x: 0, y: 5, z: 0}
-  playerForwardOffset: 0
-  lerpSpeed: 2
+  playerForwardOffset: 0.5
+  lerpSpeed: 15
 --- !u!1 &1447361273
 GameObject:
   m_ObjectHideFlags: 0
