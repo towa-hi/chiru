@@ -13,12 +13,16 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] float rotationSpeed = 16.0f;
     [SerializeField] float movementSpeed = 5.0f;
+    [SerializeField] float walkSpeed = 5.0f;
+    [SerializeField] float runSpeed = 10.0f;
     [SerializeField] float movementSmoothingTime = 0.1f;
-    Vector3 currentVelocity;
-    Vector3 targetVelocity;
+    [SerializeField] float minRotationDistance = 0.2f;
+    
+    [SerializeField] Vector3 currentVelocity;
+    [SerializeField] Vector3 targetVelocity;
     [SerializeField] Vector2 moveDirection;
     bool movementPressed;
-    
+    bool isRunning;
     
     // Start is called before the first frame update
     void Awake()
@@ -34,6 +38,14 @@ public class PlayerController : MonoBehaviour
         {
             moveDirection = Vector2.zero;
             movementPressed = false;
+        };
+        input.CharacterControls.Run.performed += ctx =>
+        {
+            isRunning = true;
+        };
+        input.CharacterControls.Run.canceled += ctx =>
+        {
+            isRunning = false;
         };
     }
 
@@ -60,7 +72,8 @@ public class PlayerController : MonoBehaviour
 
     void MovePlayer()
     {
-        targetVelocity = new Vector3(moveDirection.x, 0, moveDirection.y) * movementSpeed;
+        float speed = isRunning ? runSpeed : walkSpeed;
+        targetVelocity = new Vector3(moveDirection.x, 0, moveDirection.y) * speed;
         currentVelocity = Vector3.SmoothDamp(currentVelocity, targetVelocity, ref currentVelocity, movementSmoothingTime);
         characterController.Move(currentVelocity * Time.fixedDeltaTime);
     }
@@ -68,9 +81,10 @@ public class PlayerController : MonoBehaviour
     {
         Vector3 cursorPos = cursor.transform.position;
         cursorPos.y = transform.position.y;
-
-        Quaternion targetRotation = Quaternion.LookRotation(cursorPos - transform.position);
-        transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
-
+        if (Vector3.Distance(transform.position, cursorPos) > minRotationDistance)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(cursorPos - transform.position);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+        }
     }
 }

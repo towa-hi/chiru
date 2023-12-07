@@ -8,9 +8,11 @@ public class Cursor : MonoBehaviour
 {
     Camera mainCamera;
     Vector2 mousePosition;
+    LayerMask floorLayer;
     void Start()
     {
         mainCamera = Camera.main;
+        floorLayer = LayerMask.GetMask("Floor");
     }
     void Update()
     {
@@ -20,11 +22,11 @@ public class Cursor : MonoBehaviour
     void MoveToCursor()
     {
         Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        if (Physics.Raycast(ray, out RaycastHit hit))
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, floorLayer))
         {
-            Vector3 worldpoint = hit.point;
-            worldpoint.y = 0.01f;
-            transform.position = worldpoint;
+            Vector3 worldPoint = hit.point;
+            worldPoint.y = 0.01f;
+            transform.position = worldPoint;
         }
     }
 }
