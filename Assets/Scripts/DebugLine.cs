@@ -8,7 +8,8 @@ public class DebugLine : MonoBehaviour
 {
     public LineRenderer lineRenderer;
     public float length = 1.0f;
-
+    public Color color = Color.red;
+    
     void Start()
     {
         if (lineRenderer == null)
@@ -34,6 +35,11 @@ public class DebugLine : MonoBehaviour
 
     void DrawFacingDirection()
     {
+        if (lineRenderer.startColor != color)
+        {
+            lineRenderer.startColor = color;
+            lineRenderer.endColor = color;
+        }
         Vector3 startPosition = transform.position;
         Vector3 endPosition = startPosition + transform.forward * length;
 

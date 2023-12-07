@@ -9,7 +9,8 @@ public class DebugCircle : MonoBehaviour
     public LineRenderer lineRenderer;
     public float radius = 1.0f;
     public int segments = 36;
-
+    public Color color = Color.blue;
+    
     void Start()
     {
         if (lineRenderer == null)
@@ -35,6 +36,11 @@ public class DebugCircle : MonoBehaviour
 
     void DrawCircle()
     {
+        if (lineRenderer.startColor != color)
+        {
+            lineRenderer.startColor = color;
+            lineRenderer.endColor = color;
+        }
         lineRenderer.positionCount = segments + 1;
         lineRenderer.useWorldSpace = false;
 
