@@ -69,12 +69,7 @@ public class PlayerController : MonoBehaviour
         input.CharacterControls.Disable();
     }
 
-    // Update is called once per frame
     void Update()
-    {
-    }
-
-    void FixedUpdate()
     {
         LookAtCursor();
         MovePlayer();
@@ -85,7 +80,7 @@ public class PlayerController : MonoBehaviour
         float speed = isRunning ? runSpeed : walkSpeed;
         targetVelocity = new Vector3(moveDirection.x, 0, moveDirection.y) * speed;
         currentVelocity = Vector3.SmoothDamp(currentVelocity, targetVelocity, ref currentVelocity, movementSmoothingTime);
-        characterController.Move(currentVelocity * Time.fixedDeltaTime);
+        characterController.Move(currentVelocity * Time.deltaTime);
     }
     void LookAtCursor()
     {

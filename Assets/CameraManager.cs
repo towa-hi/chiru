@@ -11,12 +11,17 @@ public class CameraManager : MonoBehaviour
     public float maxForwardOffset;
     public float lerpSpeed;
     
-    void FixedUpdate()
+    void Update()
     {
-
-        Vector3 forwardOffset = player.transform.forward * maxForwardOffset;
-        Vector3 newFocus = player.transform.position + forwardOffset;
-        transform.position = Vector3.Lerp(transform.position, newFocus + verticalOffset, lerpSpeed * Time.fixedDeltaTime);
         
+        Vector3 newFocus = FindSweetSpot();
+        transform.position = Vector3.Lerp(transform.position, newFocus + verticalOffset, lerpSpeed * Time.deltaTime);
+    }
+
+    Vector3 FindSweetSpot()
+    {
+        Vector3 cursorPos = cursor.transform.position;
+        Vector3 playerPos = player.transform.position;
+        return Vector3.Lerp(playerPos, cursorPos, maxForwardOffset);
     }
 }

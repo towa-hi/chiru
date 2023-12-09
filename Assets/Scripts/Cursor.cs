@@ -19,7 +19,7 @@ public class Cursor : MonoBehaviour
         floorLayer = LayerMask.GetMask("Floor");
         UnityEngine.Cursor.lockState = CursorLockMode.Locked;
     }
-    void FixedUpdate()
+    void Update()
     {
         MoveToCursor();
     }
