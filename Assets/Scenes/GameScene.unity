@@ -860,6 +860,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   edgeBuffer: 40
+  mouseSensitivity: 3
 --- !u!1 &879297816
 GameObject:
   m_ObjectHideFlags: 0
