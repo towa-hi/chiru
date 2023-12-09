@@ -9,11 +9,13 @@ public class Cursor : MonoBehaviour
     Camera mainCamera;
     Vector2 mousePosition;
     LayerMask floorLayer;
+    Vector3 mousePos;
     public float edgeBuffer;
     void Start()
     {
         mainCamera = Camera.main;
         floorLayer = LayerMask.GetMask("Floor");
+        
     }
     void FixedUpdate()
     {
@@ -23,6 +25,8 @@ public class Cursor : MonoBehaviour
     void MoveToCursor()
     {
         Vector3 mousePos = Mouse.current.position.ReadValue();
+        //Vector3 mouseVel = Mouse.current.delta.ReadValue();
+        //mousePos += mouseVel;
         mousePos.x = Mathf.Clamp(mousePos.x, edgeBuffer, Screen.width - edgeBuffer);
         mousePos.y = Mathf.Clamp(mousePos.y, edgeBuffer, Screen.height - edgeBuffer);
         Ray ray = mainCamera.ScreenPointToRay(mousePos);
