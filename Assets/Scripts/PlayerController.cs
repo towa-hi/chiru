@@ -6,10 +6,12 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController ins;
+    
     [SerializeField] Cursor cursor;
 
     [SerializeField] CharacterController characterController;
-    PlayerControls input;
+    public static PlayerControls input;
 
     [SerializeField] float rotationSpeed = 16.0f;
     [SerializeField] float movementSpeed = 5.0f;
@@ -27,6 +29,14 @@ public class PlayerController : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
+        if (ins != null && ins != this)
+        {
+            Destroy(this.gameObject);
+        }
+        else
+        {
+            ins = this;
+        }
         input = new PlayerControls();
         input.CharacterControls.Movement.performed += ctx =>
         {

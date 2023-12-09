@@ -7,9 +7,9 @@ using UnityEngine.InputSystem;
 public class Cursor : MonoBehaviour
 {
     Camera mainCamera;
-    Vector2 mousePosition;
+    Vector3 mousePosition;
+    Vector3 lastMousePos;
     LayerMask floorLayer;
-    Vector3 mousePos;
     public float edgeBuffer;
     void Start()
     {
@@ -24,17 +24,44 @@ public class Cursor : MonoBehaviour
 
     void MoveToCursor()
     {
-        Vector3 mousePos = Mouse.current.position.ReadValue();
-        //Vector3 mouseVel = Mouse.current.delta.ReadValue();
-        //mousePos += mouseVel;
-        mousePos.x = Mathf.Clamp(mousePos.x, edgeBuffer, Screen.width - edgeBuffer);
-        mousePos.y = Mathf.Clamp(mousePos.y, edgeBuffer, Screen.height - edgeBuffer);
-        Ray ray = mainCamera.ScreenPointToRay(mousePos);
+        //Vector2 mousePos = PlayerController.input.CharacterControls.MouseControl.ReadValue<Vector2>();
+        //Vector2 mouseVel = PlayerController.input.CharacterControls.MouseControl.ReadValue<Vector2>();
+        Vector3 mouseDelta = GetMouseDelta();
+        TeleportMouse();
+        mousePosition += mouseDelta;
+        Debug.Log(mousePosition);
+        //mousePosition.x = Mathf.Clamp(mousePosition.x, edgeBuffer, Screen.width - edgeBuffer);
+        //mousePosition.y = Mathf.Clamp(mousePosition.y, edgeBuffer, Screen.height - edgeBuffer);
+        Ray ray = mainCamera.ScreenPointToRay(mousePosition);
         if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, floorLayer))
         {
             Vector3 worldPoint = hit.point;
             worldPoint.y = 0.01f;
             transform.position = worldPoint;
         }
+    }
+
+    public Vector3 GetMouseDelta()
+    {
+        Vector3 currentPos = PlayerController.input.CharacterControls.MouseControl.ReadValue<Vector2>();
+        if (lastMousePos == Vector3.zero)
+        {
+            lastMousePos = currentPos;
+        }
+
+        Vector3 mouseDelta = currentPos - lastMousePos;
+        lastMousePos = currentPos;
+        return mouseDelta;
+
+    }
+
+    void TeleportMouse()
+    {
+        Mouse.current.WarpCursorPosition(new Vector2(Screen.width / 2, Screen.height / 2));
+        if (mousePosition.x > Screen.width)
+        {
+            //lastMousePos = Vector3.zero;
+        }
+        
     }
 }
