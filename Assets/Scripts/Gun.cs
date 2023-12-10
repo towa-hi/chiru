@@ -38,8 +38,11 @@ public class Gun : MonoBehaviour
             Quaternion bulletRotation = Quaternion.LookRotation(bulletDirection, Vector3.up);
 
             Vector3 spawnPosition = fireOrigin.position;
-
-            Instantiate(projectilePrefab, spawnPosition, bulletRotation);
+            //spawnPosition.y = 0f;
+            GameObject projectile = Instantiate(projectilePrefab, spawnPosition, bulletRotation);
+            string parent = gameObject.transform.parent.tag;
+            Debug.Log("before setting shooter tag the object is: " + parent);
+            projectile.GetComponent<Projectile>().SetShooterTag(parent);
         }
 
     }
