@@ -80,7 +80,11 @@ public class PlayerController : MonoBehaviour
         float speed = isRunning ? runSpeed : walkSpeed;
         targetVelocity = new Vector3(moveDirection.x, 0, moveDirection.y) * speed;
         currentVelocity = Vector3.SmoothDamp(currentVelocity, targetVelocity, ref currentVelocity, movementSmoothingTime);
-        characterController.Move(currentVelocity * Time.deltaTime);
+        if (characterController.enabled)
+        {
+            characterController.Move(currentVelocity * Time.deltaTime);
+        }
+        
     }
     void LookAtCursor()
     {

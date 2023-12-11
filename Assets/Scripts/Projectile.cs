@@ -25,9 +25,15 @@ public class Projectile : MonoBehaviour
     void Update()
     {
         transform.Translate(Vector3.forward * speed * Time.deltaTime);
+        
     }
     void OnTriggerEnter(Collider other)
     {
+        if (other.gameObject.tag == "Floor")
+        {
+            return;
+        }
+        Debug.Log(other.gameObject.name);
         Debug.Log("shooter is " + shooterTag + " and its collided with " + other.gameObject.tag);
         bool collided = false;
         switch (other.gameObject.tag)

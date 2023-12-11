@@ -648,7 +648,7 @@ CharacterController:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 3
   m_Height: 2
   m_Radius: 0.4
@@ -759,7 +759,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1.336, y: 0.00999999, z: 2.74}
-  m_LocalScale: {x: 10, y: 1, z: 1}
+  m_LocalScale: {x: 10, y: 4.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -848,7 +848,7 @@ MonoBehaviour:
     type: 3}
   fireOrigin: {fileID: 85990852}
   fireDestination: {fileID: 877128526}
-  numberOfProjectiles: 5
+  numberOfProjectiles: 1
   spreadAngle: 30
   fireRate: 0.5
 --- !u!4 &855545968
@@ -1125,7 +1125,7 @@ Transform:
   m_GameObject: {fileID: 1080539478}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.21688461, y: -4.914156, z: 3.6582108}
+  m_LocalPosition: {x: 0, y: -3.52, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1145,7 +1145,7 @@ GameObject:
   - component: {fileID: 1447361274}
   m_Layer: 3
   m_Name: Floor
-  m_TagString: Untagged
+  m_TagString: Floor
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

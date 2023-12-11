@@ -32,7 +32,7 @@ public class Gun : MonoBehaviour
         for (int i = 0; i < numberOfProjectiles; i++)
         {
             float currentAngle = angle - (spreadAngle / 2) + (i * spreadAngle / (numberOfProjectiles - 1));
-            Quaternion rotation = Quaternion.Euler(0f, currentAngle, 0f);
+            //Quaternion rotation = Quaternion.Euler(0f, currentAngle, 0f);
 
             Vector3 bulletDirection = new Vector3(Mathf.Cos(currentAngle * Mathf.Deg2Rad), 0f, Mathf.Sin(currentAngle * Mathf.Deg2Rad));
             Quaternion bulletRotation = Quaternion.LookRotation(bulletDirection, Vector3.up);
