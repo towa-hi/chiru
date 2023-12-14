@@ -12,9 +12,15 @@ public class Projectile : MonoBehaviour
     // Tag of the entity that fired the projectile
     private string shooterTag;
 
-    private void Start()
+    private void OnEnable()
     {
-        Destroy(gameObject, lifetime);
+        StartCoroutine(DeactivateAfterLifetime());
+    }
+
+    private IEnumerator DeactivateAfterLifetime()
+    {
+        yield return new WaitForSeconds(lifetime);
+        gameObject.SetActive(false);
     }
 
     public void SetShooterTag(string tag)
@@ -66,9 +72,12 @@ public class Projectile : MonoBehaviour
         if (collided)
         {
             Debug.Log("I have collided with " + other.gameObject.tag + "now I will die");
-            Destroy(gameObject);
+            Deactivate();
         }
     }
 
-
+    void Deactivate()
+    {
+        gameObject.SetActive(false);
+    }
 }

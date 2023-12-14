@@ -9,9 +9,10 @@ public class Gun : MonoBehaviour
     public Transform fireOrigin;
     public Transform fireDestination;
     public int numberOfProjectiles = 1;
-    public float spreadAngle = 30f;
-    public float fireRate = 0.5f;
-
+    public float scatterAngle = 30f;
+    public float deviationAngle = 20f;
+    public float fireRate = 5f;
+    public ObjectPoolManager objectPoolManager;
     private float nextFireTime = 0f;
 
     void Update()
@@ -28,10 +29,21 @@ public class Gun : MonoBehaviour
     {
         Vector3 direction = (fireDestination.position - fireOrigin.position).normalized;
         float angle = Mathf.Atan2(direction.z, direction.x) * Mathf.Rad2Deg;
-        
+
         for (int i = 0; i < numberOfProjectiles; i++)
         {
-            float currentAngle = angle - (spreadAngle / 2) + (i * spreadAngle / (numberOfProjectiles - 1));
+            float deviation = Random.Range(-deviationAngle, deviationAngle);;
+
+            float currentAngle;
+            if (numberOfProjectiles > 1)
+            {
+                currentAngle = angle - (scatterAngle / 2) + (i * scatterAngle / (numberOfProjectiles - 1)) + deviation;
+            }
+            else
+            {
+                currentAngle = angle + deviation;
+            }
+            
             //Quaternion rotation = Quaternion.Euler(0f, currentAngle, 0f);
 
             Vector3 bulletDirection = new Vector3(Mathf.Cos(currentAngle * Mathf.Deg2Rad), 0f, Mathf.Sin(currentAngle * Mathf.Deg2Rad));
@@ -39,9 +51,11 @@ public class Gun : MonoBehaviour
 
             Vector3 spawnPosition = fireOrigin.position;
             //spawnPosition.y = 0f;
-            GameObject projectile = Instantiate(projectilePrefab, spawnPosition, bulletRotation);
+            GameObject projectile = objectPoolManager.GetFromPool("Projectile", spawnPosition, bulletRotation);
+            projectile.SetActive(true);
             string parent = gameObject.transform.parent.tag;
             Debug.Log("before setting shooter tag the object is: " + parent);
+            projectile.tag = "Projectile";
             projectile.GetComponent<Projectile>().SetShooterTag(parent);
         }
 
