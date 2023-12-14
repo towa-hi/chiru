@@ -8,6 +8,7 @@ TagManager:
   - Wall
   - Projectile
   - Floor
+  - Gun
   layers:
   - Default
   - TransparentFX

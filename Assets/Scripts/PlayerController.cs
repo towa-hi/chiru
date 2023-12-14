@@ -96,4 +96,17 @@ public class PlayerController : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
     }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("Gun"))
+        {
+            Gun gun = other.GetComponent<Gun>();
+            if (gun != null)
+            {
+                gun.SetFireOrigin(this.transform);
+                gun.SetFireDestination(cursor.transform);
+            }
+        }
+    }
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Gun : MonoBehaviour
+public class Gun : Item
 {
     public GameObject projectilePrefab;
     public Transform fireOrigin;
@@ -15,14 +15,46 @@ public class Gun : MonoBehaviour
     public ObjectPoolManager objectPoolManager;
     private float nextFireTime = 0f;
 
+    private string parent;
+    protected override void Start()
+    {
+        base.Start();
+        // Additional Start functionality for guns
+    }
+
+    public override void OnPickup()
+    {
+        Debug.Log("gun picked up");
+        base.OnPickup();
+        parent = gameObject.transform.parent.tag;
+        // Implement specific pickup behavior for the gun
+        // For example, add it to the player's inventory
+    }
+    
+    public void SetFireOrigin(Transform origin)
+    {
+        fireOrigin = origin;
+    }
+
+    public void SetFireDestination(Transform destination)
+    {
+        fireDestination = destination;
+    }
+
     void Update()
     {
-        
-        if (Mouse.current.leftButton.isPressed && Time.time >= nextFireTime)
+        if (fireOrigin != null && fireDestination != null)
         {
-            Shoot();
-            nextFireTime = Time.time + 1f / fireRate;
+            if (parent == "Player")
+            {
+                if (Mouse.current.leftButton.isPressed && Time.time >= nextFireTime)
+                {
+                    Shoot();
+                    nextFireTime = Time.time + 1f / fireRate;
+                }
+            }
         }
+    
     }
 
     void Shoot()
@@ -43,17 +75,14 @@ public class Gun : MonoBehaviour
             {
                 currentAngle = angle + deviation;
             }
-            
-            //Quaternion rotation = Quaternion.Euler(0f, currentAngle, 0f);
 
             Vector3 bulletDirection = new Vector3(Mathf.Cos(currentAngle * Mathf.Deg2Rad), 0f, Mathf.Sin(currentAngle * Mathf.Deg2Rad));
             Quaternion bulletRotation = Quaternion.LookRotation(bulletDirection, Vector3.up);
 
             Vector3 spawnPosition = fireOrigin.position;
-            //spawnPosition.y = 0f;
             GameObject projectile = objectPoolManager.GetFromPool("Projectile", spawnPosition, bulletRotation);
             projectile.SetActive(true);
-            string parent = gameObject.transform.parent.tag;
+            parent = gameObject.transform.parent.tag;
             Debug.Log("before setting shooter tag the object is: " + parent);
             projectile.tag = "Projectile";
             projectile.GetComponent<Projectile>().SetShooterTag(parent);
