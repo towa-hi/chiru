@@ -77,21 +77,26 @@ public class PlayerController : MonoBehaviour
     void MovePlayer()
     {
         float speed = isRunning ? runSpeed : walkSpeed;
-        float stopThreshold = 0.1f; // Threshold for stopping
-        float stopDecayRate = 10f; // Adjust this value to fine-tune the stopping behavior
+        float stopThreshold = 0.5f;
 
-        if (movementPressed)
+        // Independent control for X and Z axis
+        if (Mathf.Abs(moveDirection.x) > 0)
         {
-            targetVelocity = new Vector3(moveDirection.x, 0, moveDirection.y) * speed;
+            targetVelocity.x = moveDirection.x * speed;
         }
         else
         {
-            // Apply a decay rate to each axis independently
-            targetVelocity.x = Mathf.Lerp(targetVelocity.x, 0, stopDecayRate * Time.deltaTime);
-            targetVelocity.z = Mathf.Lerp(targetVelocity.z, 0, stopDecayRate * Time.deltaTime);
-
-            // Check if velocity is below the threshold and set to zero
+            targetVelocity.x = Mathf.Lerp(targetVelocity.x, 0, stopSpeed * Time.deltaTime);
             if (Mathf.Abs(targetVelocity.x) < stopThreshold) targetVelocity.x = 0;
+        }
+
+        if (Mathf.Abs(moveDirection.y) > 0)
+        {
+            targetVelocity.z = moveDirection.y * speed;
+        }
+        else
+        {
+            targetVelocity.z = Mathf.Lerp(targetVelocity.z, 0, stopSpeed * Time.deltaTime);
             if (Mathf.Abs(targetVelocity.z) < stopThreshold) targetVelocity.z = 0;
         }
 
