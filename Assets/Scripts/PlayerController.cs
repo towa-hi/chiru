@@ -14,10 +14,9 @@ public class PlayerController : MonoBehaviour
     public static PlayerControls input;
 
     [SerializeField] float rotationSpeed = 16.0f;
-    [SerializeField] float movementSpeed = 5.0f;
     [SerializeField] float walkSpeed = 5.0f;
     [SerializeField] float runSpeed = 10.0f;
-    [SerializeField] float movementSmoothingTime = 0.1f;
+    [SerializeField] float stopSpeed = 10f;
     [SerializeField] float minRotationDistance = 0.2f;
     
     [SerializeField] Vector3 currentVelocity;
@@ -78,14 +77,28 @@ public class PlayerController : MonoBehaviour
     void MovePlayer()
     {
         float speed = isRunning ? runSpeed : walkSpeed;
-        targetVelocity = new Vector3(moveDirection.x, 0, moveDirection.y) * speed;
-        currentVelocity = Vector3.SmoothDamp(currentVelocity, targetVelocity, ref currentVelocity, movementSmoothingTime);
-        if (characterController.enabled)
+        float stopThreshold = 0.1f; // Threshold for stopping
+        float stopDecayRate = 10f; // Adjust this value to fine-tune the stopping behavior
+
+        if (movementPressed)
         {
-            characterController.Move(currentVelocity * Time.deltaTime);
+            targetVelocity = new Vector3(moveDirection.x, 0, moveDirection.y) * speed;
         }
-        
+        else
+        {
+            // Apply a decay rate to each axis independently
+            targetVelocity.x = Mathf.Lerp(targetVelocity.x, 0, stopDecayRate * Time.deltaTime);
+            targetVelocity.z = Mathf.Lerp(targetVelocity.z, 0, stopDecayRate * Time.deltaTime);
+
+            // Check if velocity is below the threshold and set to zero
+            if (Mathf.Abs(targetVelocity.x) < stopThreshold) targetVelocity.x = 0;
+            if (Mathf.Abs(targetVelocity.z) < stopThreshold) targetVelocity.z = 0;
+        }
+
+        currentVelocity = targetVelocity;
+        characterController.Move(currentVelocity * Time.deltaTime);
     }
+
     void LookAtCursor()
     {
         Vector3 cursorPos = cursor.transform.position;
