@@ -87,7 +87,7 @@ public class PlayerController : MonoBehaviour
     void HandleAttackInputHeld()
     {
         // this is disgusting. make it a queue based system ASAP or we wont be able to add more attacks
-        attackButtonPressed = input.CharacterControls.Click.IsPressed();
+        attackButtonPressed = input.CharacterControls.Attack.IsPressed();
         AnimatorStateInfo currentState = handsController.GetCurrentAnimatorStateInfo(0);
         if (attackButtonPressed)
         {
@@ -96,8 +96,9 @@ public class PlayerController : MonoBehaviour
             {
                 if (currentState.IsName("Idle") ||
                     (currentState.IsName("Swing 1") && currentState.normalizedTime >= 0.3f && currentState.normalizedTime < 1.0f) ||
-                    (currentState.IsName("Swing 2") && currentState.normalizedTime >= 0.3f && currentState.normalizedTime < 1.0f) ||
-                    (currentState.IsName("Swing 1 Recovery") && currentState.normalizedTime >= 0.1f && currentState.normalizedTime < 1.0f))
+                    (currentState.IsName("Swing 2") && currentState.normalizedTime >= 0.9f && currentState.normalizedTime < 1.0f) ||
+                    (currentState.IsName("Swing 1 Recovery") && currentState.normalizedTime >= 0.1f && currentState.normalizedTime < 1.0f) ||
+                    (currentState.IsName("Swing 2 Recovery") && currentState.normalizedTime >= 0.1f && currentState.normalizedTime < 1.0f))
                 {
                     handsController.SetTrigger("AttackTrigger");
                     attackTriggerSet = true; // Set the flag to true
@@ -107,7 +108,7 @@ public class PlayerController : MonoBehaviour
             {
                 if ((currentState.IsName("Swing 1") && currentState.normalizedTime >= 0.3f &&
                      currentState.normalizedTime < 1.0f) ||
-                    (currentState.IsName("Swing 2") && currentState.normalizedTime >= 0.3f &&
+                    (currentState.IsName("Swing 2") && currentState.normalizedTime >= 0.9f &&
                      currentState.normalizedTime < 1.0f))
                 {
                     handsController.SetTrigger("AttackTrigger");
