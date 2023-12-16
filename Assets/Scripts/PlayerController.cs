@@ -22,10 +22,13 @@ public class PlayerController : MonoBehaviour
     [SerializeField] Vector3 currentVelocity;
     [SerializeField] Vector3 targetVelocity;
     [SerializeField] Vector2 moveDirection;
+
+    public Animator handsController;
+    
     bool movementPressed;
     bool isRunning;
     
-    public bool isAttacking;
+    public bool attackButtonPressed;
 
     public AttackPhase currentAttackPhase = AttackPhase.IDLE;
     
@@ -60,8 +63,8 @@ public class PlayerController : MonoBehaviour
         {
             isRunning = false;
         };
-    }
 
+    }
     void OnEnable()
     {
         input.CharacterControls.Enable();
@@ -76,8 +79,53 @@ public class PlayerController : MonoBehaviour
     {
         LookAtCursor();
         MovePlayer();
+        HandleAttackInputHeld();
     }
 
+    public bool attackTriggerSet = false;
+    
+    void HandleAttackInputHeld()
+    {
+        // this is disgusting. make it a queue based system ASAP or we wont be able to add more attacks
+        attackButtonPressed = input.CharacterControls.Click.IsPressed();
+        AnimatorStateInfo currentState = handsController.GetCurrentAnimatorStateInfo(0);
+        if (attackButtonPressed)
+        {
+            // idk why this works 
+            if (!attackTriggerSet)
+            {
+                if (currentState.IsName("Idle") ||
+                    (currentState.IsName("Swing 1") && currentState.normalizedTime >= 0.3f && currentState.normalizedTime < 1.0f) ||
+                    (currentState.IsName("Swing 2") && currentState.normalizedTime >= 0.3f && currentState.normalizedTime < 1.0f) ||
+                    (currentState.IsName("Swing 1 Recovery") && currentState.normalizedTime >= 0.1f && currentState.normalizedTime < 1.0f))
+                {
+                    handsController.SetTrigger("AttackTrigger");
+                    attackTriggerSet = true; // Set the flag to true
+                }
+            }
+            else
+            {
+                if ((currentState.IsName("Swing 1") && currentState.normalizedTime >= 0.3f &&
+                     currentState.normalizedTime < 1.0f) ||
+                    (currentState.IsName("Swing 2") && currentState.normalizedTime >= 0.3f &&
+                     currentState.normalizedTime < 1.0f))
+                {
+                    handsController.SetTrigger("AttackTrigger");
+                    attackTriggerSet = true; 
+                }
+            }
+        }
+        else
+        {
+            attackTriggerSet = false; // reset the flag when the attack button is released
+        }
+
+        // reset the flag if the state changes
+        if (!currentState.IsName("Idle") && !currentState.IsName("Swing 1") && !currentState.IsName("Swing 2"))
+        {
+            attackTriggerSet = false;
+        }
+    }
     void MovePlayer()
     {
         float speed;

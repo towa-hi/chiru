@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour
     public bool isMenu;
     public bool isPaused;
     public MainMenuUI menuUI;
+    public GameObject playerObject;
     
     void Awake()
     {
@@ -45,7 +46,23 @@ public class GameManager : MonoBehaviour
     public void NewGame()
     {
         SetIsMenu(false);
-        SceneManager.LoadScene("GameScene");
+        LoadLevel("GameScene");
+    }
+
+    public void LoadLevel(string levelName)
+    {
+        SceneManager.LoadScene(levelName);
+        // spawn in player
+        /**
+        foreach (GameObject rootObj in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+        {
+            if (rootObj.GetComponent<PlayerSpawner>())
+            {
+                Instantiate(playerObject, rootObj.transform.position, Quaternion.identity);
+                break;
+            }
+        }
+        **/
     }
     public void ContinueSavedGame()
     {
