@@ -25,6 +25,10 @@ public class PlayerController : MonoBehaviour
     bool movementPressed;
     bool isRunning;
     
+    public bool isAttacking;
+
+    public AttackPhase currentAttackPhase = AttackPhase.IDLE;
+    
     // Start is called before the first frame update
     void Awake()
     {
@@ -76,7 +80,16 @@ public class PlayerController : MonoBehaviour
 
     void MovePlayer()
     {
-        float speed = isRunning ? runSpeed : walkSpeed;
+        float speed;
+        if (currentAttackPhase == AttackPhase.IDLE)
+        {
+            speed = isRunning ? runSpeed : walkSpeed;
+        }
+        else
+        {
+            speed = walkSpeed * 0.2f;
+        }
+
         float stopThreshold = 0.5f;
 
         // Independent control for X and Z axis
@@ -106,12 +119,13 @@ public class PlayerController : MonoBehaviour
 
     void LookAtCursor()
     {
+        float currentRotationSpeed = currentAttackPhase == AttackPhase.IDLE ? rotationSpeed : 0;
         Vector3 cursorPos = cursor.transform.position;
         cursorPos.y = transform.position.y;
         if (Vector3.Distance(transform.position, cursorPos) > minRotationDistance)
         {
             Quaternion targetRotation = Quaternion.LookRotation(cursorPos - transform.position);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, currentRotationSpeed * Time.deltaTime);
         }
     }
 
@@ -127,4 +141,11 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
+}
+public enum AttackPhase
+{
+    IDLE,
+    WINDUP,
+    ATTACKING,
+    WINDDOWN
 }
