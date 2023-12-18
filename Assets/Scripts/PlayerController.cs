@@ -31,10 +31,14 @@ public class PlayerController : MonoBehaviour
     public bool attackButtonPressed;
 
     public AttackPhase currentAttackPhase = AttackPhase.IDLE;
+
+    public Lighsaber attackEffect;
     
     // Start is called before the first frame update
     void Awake()
     {
+ //       attackQueue = new Queue<string>();
+        
         if (ins != null && ins != this)
         {
             Destroy(this.gameObject);
@@ -81,6 +85,14 @@ public class PlayerController : MonoBehaviour
         MovePlayer();
         HandleAttackInputHeld();
         HandleLeftActionInputHeld();
+        if (currentAttackPhase == AttackPhase.ATTACKING || currentAttackPhase == AttackPhase.WINDDOWN)
+        {
+            attackEffect.SetEnabled(true);
+        }
+        else
+        {
+            attackEffect.SetEnabled(false);
+        }
     }
 
     public bool parryTriggerSet = false;
@@ -88,13 +100,16 @@ public class PlayerController : MonoBehaviour
     {
         AnimatorStateInfo currentState = handsController.GetCurrentAnimatorStateInfo(0);
         bool leftActionButtonPressed = input.CharacterControls.LeftAction.IsPressed();
-        if (leftActionButtonPressed && !parryTriggerSet)
+        if (leftActionButtonPressed)
         {
-            if (currentState.IsName("Idle"))
+            if (!parryTriggerSet)
             {
-                handsController.SetTrigger("ParryTrigger");
-                parryTriggerSet = true;
-                Debug.Log("wew lad");
+                if (currentState.IsName("Idle"))
+                {
+                    handsController.SetTrigger("ParryTrigger");
+                    parryTriggerSet = true;
+                    Debug.Log("parry trigger set true");
+                }
             }
         }
         else
@@ -102,8 +117,66 @@ public class PlayerController : MonoBehaviour
             parryTriggerSet = false;
         }
     }
-    public bool attackTriggerSet = false;
     
+    public bool attackTriggerSet = false;
+
+//    Queue<string> attackQueue;
+
+    // void OnAttackInputHeld()
+    // {
+    //     attackButtonPressed = input.CharacterControls.Attack.IsPressed();
+    //     AnimatorStateInfo currentState = handsController.GetCurrentAnimatorStateInfo(0);
+    //     
+    //     // what state am I in?
+    //     if (currentState.IsName("Idle"))
+    //     {
+    //         if (attackButtonPressed)
+    //         {
+    //             // if nothing in attackQueue
+    //             if (attackQueue.Count == 0)
+    //             {
+    //                 attackQueue.Enqueue("attack");
+    //             }
+    //         }
+    //     }
+    //     else if (currentState.IsName("Swing 1"))
+    //     {
+    //         if (attackButtonPressed)
+    //         {
+    //             // if nothing in attackQueue
+    //             if (attackQueue.Count == 0)
+    //             {
+    //                 attackQueue.Enqueue("attack");
+    //             }
+    //         }
+    //     }
+    //     else if (currentState.IsName("Swing 1 Recovery"))
+    //     {
+    //         if (attackButtonPressed)
+    //         {
+    //             // if nothing in attackQueue
+    //             if (attackQueue.Count == 0)
+    //             {
+    //                 attackQueue.Enqueue("attack");
+    //             }
+    //         }
+    //     }
+    //     else if (currentState.IsName("Swing 2"))
+    //     {
+    //         
+    //     }
+    //     else if (currentState.IsName("Swing 2 Recovery"))
+    //     {
+    //         
+    //     }
+    //     else if (currentState.IsName("Parry"))
+    //     {
+    //         
+    //     }
+    // }
+    //
+    //
+    //
     void HandleAttackInputHeld()
     {
         // this is disgusting. make it a queue based system ASAP or we wont be able to add more attacks
