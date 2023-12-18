@@ -80,8 +80,28 @@ public class PlayerController : MonoBehaviour
         LookAtCursor();
         MovePlayer();
         HandleAttackInputHeld();
+        HandleLeftActionInputHeld();
     }
 
+    public bool parryTriggerSet = false;
+    void HandleLeftActionInputHeld()
+    {
+        AnimatorStateInfo currentState = handsController.GetCurrentAnimatorStateInfo(0);
+        bool leftActionButtonPressed = input.CharacterControls.LeftAction.IsPressed();
+        if (leftActionButtonPressed && !parryTriggerSet)
+        {
+            if (currentState.IsName("Idle"))
+            {
+                handsController.SetTrigger("ParryTrigger");
+                parryTriggerSet = true;
+                Debug.Log("wew lad");
+            }
+        }
+        else
+        {
+            parryTriggerSet = false;
+        }
+    }
     public bool attackTriggerSet = false;
     
     void HandleAttackInputHeld()

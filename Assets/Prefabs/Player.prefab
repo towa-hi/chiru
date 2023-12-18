@@ -170,6 +170,7 @@ MonoBehaviour:
   handsController: {fileID: 8792056309439479154}
   attackButtonPressed: 0
   currentAttackPhase: 0
+  parryTriggerSet: 0
   attackTriggerSet: 0
 --- !u!143 &5468403399836768465
 CharacterController:

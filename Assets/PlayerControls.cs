@@ -62,6 +62,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Left Action"",
+                    ""type"": ""Button"",
+                    ""id"": ""c968e0bf-6315-42fd-9578-24c47b1b80c0"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -152,6 +161,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Attack"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4c8ede92-aa6e-44b1-8abc-ba1fffc44466"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Left Action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -164,6 +184,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_CharacterControls_Run = m_CharacterControls.FindAction("Run", throwIfNotFound: true);
         m_CharacterControls_MouseControl = m_CharacterControls.FindAction("MouseControl", throwIfNotFound: true);
         m_CharacterControls_Attack = m_CharacterControls.FindAction("Attack", throwIfNotFound: true);
+        m_CharacterControls_LeftAction = m_CharacterControls.FindAction("Left Action", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -229,6 +250,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_CharacterControls_Run;
     private readonly InputAction m_CharacterControls_MouseControl;
     private readonly InputAction m_CharacterControls_Attack;
+    private readonly InputAction m_CharacterControls_LeftAction;
     public struct CharacterControlsActions
     {
         private @PlayerControls m_Wrapper;
@@ -237,6 +259,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Run => m_Wrapper.m_CharacterControls_Run;
         public InputAction @MouseControl => m_Wrapper.m_CharacterControls_MouseControl;
         public InputAction @Attack => m_Wrapper.m_CharacterControls_Attack;
+        public InputAction @LeftAction => m_Wrapper.m_CharacterControls_LeftAction;
         public InputActionMap Get() { return m_Wrapper.m_CharacterControls; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -258,6 +281,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Attack.started += instance.OnAttack;
             @Attack.performed += instance.OnAttack;
             @Attack.canceled += instance.OnAttack;
+            @LeftAction.started += instance.OnLeftAction;
+            @LeftAction.performed += instance.OnLeftAction;
+            @LeftAction.canceled += instance.OnLeftAction;
         }
 
         private void UnregisterCallbacks(ICharacterControlsActions instance)
@@ -274,6 +300,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @Attack.started -= instance.OnAttack;
             @Attack.performed -= instance.OnAttack;
             @Attack.canceled -= instance.OnAttack;
+            @LeftAction.started -= instance.OnLeftAction;
+            @LeftAction.performed -= instance.OnLeftAction;
+            @LeftAction.canceled -= instance.OnLeftAction;
         }
 
         public void RemoveCallbacks(ICharacterControlsActions instance)
@@ -297,5 +326,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnRun(InputAction.CallbackContext context);
         void OnMouseControl(InputAction.CallbackContext context);
         void OnAttack(InputAction.CallbackContext context);
+        void OnLeftAction(InputAction.CallbackContext context);
     }
 }
