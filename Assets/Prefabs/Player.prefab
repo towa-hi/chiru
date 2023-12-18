@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6149649210178247273}
   - component: {fileID: 1775228233329777996}
   - component: {fileID: 6370991767721061111}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -121,7 +121,7 @@ GameObject:
   - component: {fileID: 5468403399836768465}
   - component: {fileID: 8792056309439479154}
   - component: {fileID: 2051746814890462960}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -249,7 +249,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 618707457149141923}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: hilt
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -280,7 +280,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7473390272015390741}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Hand Rotation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -315,7 +315,7 @@ GameObject:
   - component: {fileID: 5009803368697944899}
   - component: {fileID: 7599435562686826045}
   - component: {fileID: 8198077766410683774}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Weapon Trail Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -402,7 +402,7 @@ GameObject:
   - component: {fileID: 4990323619538004939}
   - component: {fileID: 8750419664215390724}
   - component: {fileID: 7290335850035959049}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cylinder (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -522,7 +522,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1476205367733619105}
   - component: {fileID: 1978718571082499723}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Gun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -581,7 +581,7 @@ GameObject:
   - component: {fileID: 6004563323007886516}
   - component: {fileID: 8277322176443381009}
   - component: {fileID: 7065604224729666986}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -685,7 +685,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5972608965339729546}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Left Hand Rotation
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -718,7 +718,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2941842065460988171}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Hand Origin
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -755,7 +755,7 @@ GameObject:
   - component: {fileID: 1290427293235522563}
   - component: {fileID: 3801328844553459440}
   - component: {fileID: 5446267247034634225}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cylinder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -861,7 +861,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3729471716739267404}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Debug View
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -894,7 +894,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1130996031155999436}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -931,7 +931,7 @@ GameObject:
   - component: {fileID: 6766427360041795219}
   - component: {fileID: 224201504251954326}
   - component: {fileID: 8063371496914817070}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1035,7 +1035,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 525045144039550048}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: tip
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1069,7 +1069,7 @@ GameObject:
   - component: {fileID: 9083250738358386391}
   - component: {fileID: 7741481585269700831}
   - component: {fileID: 6537141415883279293}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1173,7 +1173,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1149741826414163517}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Left Hand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1205,7 +1205,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2370968480798993524}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Hand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1240,7 +1240,7 @@ GameObject:
   - component: {fileID: 7533075416164264221}
   - component: {fileID: 3520855758984086226}
   - component: {fileID: 3312203186920268189}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Capsule
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1349,7 +1349,7 @@ GameObject:
   - component: {fileID: 2955826679677897346}
   - component: {fileID: 6909854191939131882}
   - component: {fileID: 1181825201553138070}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1453,7 +1453,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2029025011370455831}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Weapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1491,7 +1491,7 @@ GameObject:
   - component: {fileID: 2073558391902728117}
   - component: {fileID: 4951050306713789183}
   - component: {fileID: 485642200748492711}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1599,6 +1599,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Debug Facing
       objectReference: {fileID: 0}
+    - target: {fileID: 357589060434304825, guid: 904a64eb31c5ed04ea5b478d067a189b,
+        type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 432316711104449299, guid: 904a64eb31c5ed04ea5b478d067a189b,
         type: 3}
       propertyPath: m_Positions.Array.data[0].x
@@ -1703,6 +1708,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Debug Facing
       objectReference: {fileID: 0}
+    - target: {fileID: 357589060434304825, guid: 904a64eb31c5ed04ea5b478d067a189b,
+        type: 3}
+      propertyPath: m_Layer
+      value: 7
+      objectReference: {fileID: 0}
     - target: {fileID: 432316711104449299, guid: 904a64eb31c5ed04ea5b478d067a189b,
         type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
@@ -1791,6 +1801,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Debug Circle
+      objectReference: {fileID: 0}
+    - target: {fileID: 3925914706588592970, guid: d5883edb2eddca742894e3615c565cc3,
+        type: 3}
+      propertyPath: m_Layer
+      value: 7
       objectReference: {fileID: 0}
     - target: {fileID: 6662698971776524407, guid: d5883edb2eddca742894e3615c565cc3,
         type: 3}
