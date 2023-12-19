@@ -1142,7 +1142,7 @@ GameObject:
   - component: {fileID: 1365495263}
   m_Layer: 0
   m_Name: Item
-  m_TagString: Untagged
+  m_TagString: Gun
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1579,7 +1579,8 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 877128527}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 2754600196403138006, guid: fef38627d7fd31d43af3a0b1fdd80f7a, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: fef38627d7fd31d43af3a0b1fdd80f7a, type: 3}

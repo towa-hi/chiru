@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class Gun : Item
+public class Gun : MonoBehaviour
 {
     public GameObject projectilePrefab;
     public Transform fireOrigin;
@@ -16,16 +16,10 @@ public class Gun : Item
     private float nextFireTime = 0f;
 
     private string parent;
-    protected override void Start()
-    {
-        base.Start();
-        // Additional Start functionality for guns
-    }
 
-    public override void OnPickup()
+    public void OnPickup()
     {
         Debug.Log("gun picked up");
-        base.OnPickup();
         parent = gameObject.transform.parent.tag;
         // Implement specific pickup behavior for the gun
         // For example, add it to the player's inventory

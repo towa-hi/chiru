@@ -33,7 +33,7 @@ public class Item : MonoBehaviour
 
     public virtual void OnPickup()
     {
-        // Define what happens when the item is picked up
+        Destroy(gameObject);
     }
     
     void OnTriggerEnter(Collider other)
