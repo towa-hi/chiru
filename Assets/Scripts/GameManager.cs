@@ -9,8 +9,11 @@ public class GameManager : MonoBehaviour
     public bool isMenu;
     public bool isPaused;
     public MainMenuUI menuUI;
-    public GameObject playerObject;
-    
+    public GameObject playerPrefab;
+    public GameObject enemyTheoPrefab;
+
+    public GameObject cursor;
+    public GameObject player;
     void Awake()
     {
         if (ins == null)
@@ -24,6 +27,11 @@ public class GameManager : MonoBehaviour
             {
                 Destroy(gameObject);
             }
+        }
+        Debug.Log("baba boey");
+        if (SceneManager.GetActiveScene().name == "GameScene")
+        {
+            LoadLevel("GameScene");
         }
     }
 
@@ -51,18 +59,34 @@ public class GameManager : MonoBehaviour
 
     public void LoadLevel(string levelName)
     {
-        SceneManager.LoadScene(levelName);
-        // spawn in player
-        /**
-        foreach (GameObject rootObj in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+        SceneManager.LoadSceneAsync(levelName);
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "GameScene")
         {
-            if (rootObj.GetComponent<PlayerSpawner>())
+            foreach (GameObject rootObj in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
             {
-                Instantiate(playerObject, rootObj.transform.position, Quaternion.identity);
-                break;
+                Debug.Log(rootObj.name);
+                if (rootObj.GetComponent<Cursor>())
+                {
+                    cursor = rootObj;
+                }
+                if (rootObj.GetComponent<PlayerSpawner>())
+                {
+                    Debug.Log("Spawning player");
+                    player = Instantiate(playerPrefab, rootObj.transform.position, Quaternion.identity);
+                }
+                else if (rootObj.GetComponent<EnemySpawner>())
+                {
+                    Instantiate(enemyTheoPrefab, rootObj.transform.position, Quaternion.identity);
+                }
             }
         }
-        **/
+
+        SceneManager.sceneLoaded -= OnSceneLoaded;
     }
     public void ContinueSavedGame()
     {

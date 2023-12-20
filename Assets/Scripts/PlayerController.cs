@@ -42,6 +42,7 @@ public class PlayerController : Entity
         {
             moveDirection = Vector2.zero;
         };
+        cursor = GameManager.ins.cursor.GetComponent<Cursor>();
     }
     void OnEnable()
     {

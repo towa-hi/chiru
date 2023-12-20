@@ -2313,6 +2313,12 @@ MonoBehaviour:
   isMenu: 0
   isPaused: 0
   menuUI: {fileID: 1054930389}
+  playerPrefab: {fileID: 958771285242144668, guid: fef38627d7fd31d43af3a0b1fdd80f7a,
+    type: 3}
+  enemyTheoPrefab: {fileID: 7541481396835948472, guid: 008fa3ef75ab8534a9d1f197b1f194e4,
+    type: 3}
+  cursor: {fileID: 0}
+  player: {fileID: 0}
 --- !u!4 &1981076753
 Transform:
   m_ObjectHideFlags: 0

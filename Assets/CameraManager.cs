@@ -11,6 +11,7 @@ public class CameraManager : MonoBehaviour
     public float maxForwardOffset;
     public float lerpSpeed;
     
+    
     void Update()
     {
         
@@ -20,8 +21,15 @@ public class CameraManager : MonoBehaviour
 
     Vector3 FindSweetSpot()
     {
-        Vector3 cursorPos = cursor.transform.position;
-        Vector3 playerPos = player.transform.position;
-        return Vector3.Lerp(playerPos, cursorPos, maxForwardOffset);
+        if (GameManager.ins.player && GameManager.ins.cursor)
+        {
+            Vector3 cursorPos = GameManager.ins.cursor.transform.position;
+            Vector3 playerPos = GameManager.ins.player.transform.position;
+            return Vector3.Lerp(playerPos, cursorPos, maxForwardOffset);
+        }
+        else
+        {
+            return Vector3.zero;
+        }
     }
 }
