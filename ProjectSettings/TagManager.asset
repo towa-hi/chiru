@@ -9,6 +9,8 @@ TagManager:
   - Projectile
   - Floor
   - Gun
+  - EnemyHurtbox
+  - PlayerHurtbox
   layers:
   - Default
   - TransparentFX

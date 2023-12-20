@@ -74,6 +74,11 @@ public class GameManager : MonoBehaviour
         
     }
 
+    public void HandlePlayerDeath()
+    {
+        Debug.Log("Player died, reset game");
+    }
+    
     public void QuitGame()
     {
         #if UNITY_STANDALONE

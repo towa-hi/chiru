@@ -4,70 +4,44 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : Entity
 {
-    public static PlayerController ins;
+    public bool debugVisualization;
     
     [SerializeField] Cursor cursor;
-
     [SerializeField] CharacterController characterController;
     public static PlayerControls input;
 
-    [SerializeField] float rotationSpeed = 16.0f;
-    [SerializeField] float walkSpeed = 5.0f;
-    [SerializeField] float runSpeed = 10.0f;
-    [SerializeField] float stopSpeed = 10f;
-    [SerializeField] float minRotationDistance = 0.2f;
+    public float rotationSpeed = 16.0f;
+    public float idleMovementSpeed = 5.0f;
+    public float attackingMovementSpeed = 1f;
+    public float runSpeed = 10.0f;
+    public float stopSpeed = 10f;
+    public float minRotationDistance = 0.2f;
     
     [SerializeField] Vector3 currentVelocity;
     [SerializeField] Vector3 targetVelocity;
     [SerializeField] Vector2 moveDirection;
+    public MeleeWeapon meleeWeapon;
 
     public Animator handsController;
     
-    bool movementPressed;
-    bool isRunning;
-    
     public bool attackButtonPressed;
-
-    public AttackPhase currentAttackPhase = AttackPhase.IDLE;
 
     public Lighsaber attackEffect;
     
     // Start is called before the first frame update
     void Awake()
     {
- //       attackQueue = new Queue<string>();
-        
-        if (ins != null && ins != this)
-        {
-            Destroy(this.gameObject);
-        }
-        else
-        {
-            ins = this;
-        }
         input = new PlayerControls();
         input.CharacterControls.Movement.performed += ctx =>
         {
             moveDirection = ctx.ReadValue<Vector2>();
-            movementPressed = moveDirection.x != 0 || moveDirection.y != 0;
         };
-
         input.CharacterControls.Movement.canceled += ctx =>
         {
             moveDirection = Vector2.zero;
-            movementPressed = false;
         };
-        input.CharacterControls.Run.performed += ctx =>
-        {
-            isRunning = true;
-        };
-        input.CharacterControls.Run.canceled += ctx =>
-        {
-            isRunning = false;
-        };
-
     }
     void OnEnable()
     {
@@ -82,10 +56,10 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         LookAtCursor();
-        MovePlayer();
         HandleAttackInputHeld();
         HandleLeftActionInputHeld();
-        if (currentAttackPhase == AttackPhase.ATTACKING || currentAttackPhase == AttackPhase.WINDDOWN)
+        MovePlayer();
+        if (meleeWeapon.currentAttackPhase == AttackPhase.ATTACKING || meleeWeapon.currentAttackPhase == AttackPhase.WINDDOWN)
         {
             attackEffect.SetEnabled(true);
         }
@@ -95,88 +69,29 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    public bool parryTriggerSet = false;
+    public bool parryTriggerSetFlag;
     void HandleLeftActionInputHeld()
     {
         AnimatorStateInfo currentState = handsController.GetCurrentAnimatorStateInfo(0);
         bool leftActionButtonPressed = input.CharacterControls.LeftAction.IsPressed();
         if (leftActionButtonPressed)
         {
-            if (!parryTriggerSet)
+            if (!parryTriggerSetFlag)
             {
                 if (currentState.IsName("Idle"))
                 {
                     handsController.SetTrigger("ParryTrigger");
-                    parryTriggerSet = true;
-                    Debug.Log("parry trigger set true");
+                    parryTriggerSetFlag = true;
                 }
             }
         }
         else
         {
-            parryTriggerSet = false;
+            parryTriggerSetFlag = false;
         }
     }
     
-    public bool attackTriggerSet = false;
-
-//    Queue<string> attackQueue;
-
-    // void OnAttackInputHeld()
-    // {
-    //     attackButtonPressed = input.CharacterControls.Attack.IsPressed();
-    //     AnimatorStateInfo currentState = handsController.GetCurrentAnimatorStateInfo(0);
-    //     
-    //     // what state am I in?
-    //     if (currentState.IsName("Idle"))
-    //     {
-    //         if (attackButtonPressed)
-    //         {
-    //             // if nothing in attackQueue
-    //             if (attackQueue.Count == 0)
-    //             {
-    //                 attackQueue.Enqueue("attack");
-    //             }
-    //         }
-    //     }
-    //     else if (currentState.IsName("Swing 1"))
-    //     {
-    //         if (attackButtonPressed)
-    //         {
-    //             // if nothing in attackQueue
-    //             if (attackQueue.Count == 0)
-    //             {
-    //                 attackQueue.Enqueue("attack");
-    //             }
-    //         }
-    //     }
-    //     else if (currentState.IsName("Swing 1 Recovery"))
-    //     {
-    //         if (attackButtonPressed)
-    //         {
-    //             // if nothing in attackQueue
-    //             if (attackQueue.Count == 0)
-    //             {
-    //                 attackQueue.Enqueue("attack");
-    //             }
-    //         }
-    //     }
-    //     else if (currentState.IsName("Swing 2"))
-    //     {
-    //         
-    //     }
-    //     else if (currentState.IsName("Swing 2 Recovery"))
-    //     {
-    //         
-    //     }
-    //     else if (currentState.IsName("Parry"))
-    //     {
-    //         
-    //     }
-    // }
-    //
-    //
-    //
+    bool attackTriggerSetFlag;
     void HandleAttackInputHeld()
     {
         // this is disgusting. make it a queue based system ASAP or we wont be able to add more attacks
@@ -185,7 +100,7 @@ public class PlayerController : MonoBehaviour
         if (attackButtonPressed)
         {
             // idk why this works 
-            if (!attackTriggerSet)
+            if (!attackTriggerSetFlag)
             {
                 if (currentState.IsName("Idle") ||
                     (currentState.IsName("Swing 1") && currentState.normalizedTime >= 0.3f && currentState.normalizedTime < 1.0f) ||
@@ -194,7 +109,7 @@ public class PlayerController : MonoBehaviour
                     (currentState.IsName("Swing 2 Recovery") && currentState.normalizedTime >= 0.1f && currentState.normalizedTime < 1.0f))
                 {
                     handsController.SetTrigger("AttackTrigger");
-                    attackTriggerSet = true; // Set the flag to true
+                    attackTriggerSetFlag = true; // Set the flag to true
                 }
             }
             else
@@ -205,35 +120,27 @@ public class PlayerController : MonoBehaviour
                      currentState.normalizedTime < 1.0f))
                 {
                     handsController.SetTrigger("AttackTrigger");
-                    attackTriggerSet = true; 
+                    attackTriggerSetFlag = true; 
                 }
             }
         }
         else
         {
-            attackTriggerSet = false; // reset the flag when the attack button is released
+            attackTriggerSetFlag = false; // reset the flag when the attack button is released
         }
 
         // reset the flag if the state changes
         if (!currentState.IsName("Idle") && !currentState.IsName("Swing 1") && !currentState.IsName("Swing 2"))
         {
-            attackTriggerSet = false;
+            attackTriggerSetFlag = false;
         }
     }
     void MovePlayer()
     {
-        float speed;
-        if (currentAttackPhase == AttackPhase.IDLE)
-        {
-            speed = isRunning ? runSpeed : walkSpeed;
-        }
-        else
-        {
-            speed = walkSpeed * 0.2f;
-        }
-
+        // set speed depending on if idle
+        float speed = meleeWeapon.currentAttackPhase == AttackPhase.IDLE ? idleMovementSpeed : attackingMovementSpeed;
         float stopThreshold = 0.5f;
-
+        
         // Independent control for X and Z axis
         if (Mathf.Abs(moveDirection.x) > 0)
         {
@@ -261,7 +168,8 @@ public class PlayerController : MonoBehaviour
 
     void LookAtCursor()
     {
-        float currentRotationSpeed = currentAttackPhase == AttackPhase.IDLE ? rotationSpeed : 0;
+        // set rotation depending on if idle
+        float currentRotationSpeed = meleeWeapon.currentAttackPhase == AttackPhase.IDLE ? rotationSpeed : 0;
         Vector3 cursorPos = cursor.transform.position;
         cursorPos.y = transform.position.y;
         if (Vector3.Distance(transform.position, cursorPos) > minRotationDistance)
@@ -283,11 +191,4 @@ public class PlayerController : MonoBehaviour
             }
         }
     }
-}
-public enum AttackPhase
-{
-    IDLE,
-    WINDUP,
-    ATTACKING,
-    WINDDOWN
 }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-public class Enemy : MonoBehaviour
+public class Enemy : Entity
 {
     public float hearingRadius;
     public float visionRadius;
@@ -11,33 +11,19 @@ public class Enemy : MonoBehaviour
     public LayerMask targetMask;
     public LayerMask obstacleMask;
     
-    public float hp;
-    public float moveSpeed;
-    public float rotationSpeed;
-    public CharacterController characterController;
-    public List<GameObject> deleteAfterDeath;
     public GameObject currentTarget;
     public float targetLostDelay = 1f;
     public NavMeshAgent navMeshAgent;
 
-    void Start()
-    {
-        navMeshAgent.speed = moveSpeed;
-    }
-    void OnDeath()
-    {
-        
-    }
-
+    
     void Update()
     {
         FindVisibleTargets();
-        if (currentTarget != null)
+        if (currentTarget)
         {
-            //Debug.DrawLine(transform.position, currentTarget.transform.position, Color.red);
+            Debug.DrawLine(transform.position, currentTarget.transform.position, Color.red);
         }
 
-        //TurnTowardsTarget();
         MoveTowardsTarget();
         Debug.DrawLine(transform.position, navMeshAgent.destination, Color.blue);
 
@@ -49,71 +35,51 @@ public class Enemy : MonoBehaviour
         for (int i = 0; i < targetsInViewRadius.Length; i++)
         {
             Transform target = targetsInViewRadius[i].transform;
+            // if target is not player
+            if (!target.CompareTag("PlayerHurtbox"))
+            {
+                continue;
+            }
             Vector3 dirToTarget = (target.position - transform.position).normalized;
-            // if target is within fov 
-            if (Vector3.Angle(transform.forward, dirToTarget) < visionFOV / 2)
+            // if target is not within fov 
+            if (!(Vector3.Angle(transform.forward, dirToTarget) < visionFOV / 2))
             {
-                float distanceToTarget = Vector3.Distance(transform.position, target.position);
-                if (!Physics.Raycast(transform.position, dirToTarget, distanceToTarget, obstacleMask))
-                {
-                    
-                    // Target is within vision and not obstructed
-                    Debug.Log("Target in sight: " + target.root.name);
-                    currentTarget = target.root.gameObject;
-                    targetFound = true;
-                }
+                continue;
             }
-        }
-
-        if (!targetFound)
-        {
-            Debug.Log("no targets found");
-            if (currentTarget is not null)
+            float distanceToTarget = Vector3.Distance(transform.position, target.position);
+            // if target is behind a obstacle
+            if (Physics.Raycast(transform.position, dirToTarget, distanceToTarget, obstacleMask))
             {
-                LoseTarget();
+                continue;
             }
+
+            if (target.root.gameObject != currentTarget)
+            {
+                currentTarget = target.root.gameObject;
+                Debug.Log(name + " AI: I found target!");
+            }
+            targetFound = true;
         }
-    }
-
-    void TurnTowardsTarget()
-    {
-        if (currentTarget is not null)
+        // if no targets within vision 
+        if (!targetFound && currentTarget)
         {
-            Vector3 directionToTarget = (currentTarget.transform.position - transform.position).normalized;
-            // Remove any vertical component in the direction
-            directionToTarget.y = 0;
-
-            // Calculate the rotation required to face the target
-            Quaternion lookRotation = Quaternion.LookRotation(directionToTarget);
-
-            // Rotate the enemy smoothly towards the target
-            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, Time.deltaTime * rotationSpeed);
-
+            LoseTarget();
         }
     }
 
     public float minimumDistanceToTarget;
-    public bool movesIrregularly;
     void MoveTowardsTarget()
     {
-        if (currentTarget is not null)
+        if (currentTarget)
         {
             float distanceToTarget = Vector3.Distance(transform.position, currentTarget.transform.position);
             if (distanceToTarget > minimumDistanceToTarget)
             {
                 Vector3 forwardDirection = (currentTarget.transform.position - transform.position).normalized;
-                Vector3 strafeDirection = Vector3.zero;
 
-                // if (movesIrregularly)
-                // {
-                //     float strafeIntensity = Mathf.Clamp01((distanceToTarget - minimumDistanceToTarget) / visionRadius);
-                //     strafeDirection = GetStrafeDirection() * strafeIntensity;
-                // }
+                forwardDirection.Normalize(); // Normalize to ensure consistent speed
 
-                Vector3 combinedDirection = forwardDirection + strafeDirection;
-                combinedDirection.Normalize(); // Normalize to ensure consistent speed
-
-                navMeshAgent.SetDestination(transform.position + combinedDirection * moveSpeed * Time.deltaTime);
+                navMeshAgent.SetDestination(transform.position + forwardDirection * 50 * Time.deltaTime);
                 navMeshAgent.isStopped = false;
             }
             else
@@ -127,27 +93,23 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    float strafeTimer;
-    Vector3 strafeDirection;
-    Vector3 GetStrafeDirection()
-    {
-        strafeTimer -= Time.deltaTime;
-        if (strafeTimer <= 0)
-        {
-            strafeDirection = (Random.Range(0, 2) * 2 - 1) * transform.right;
-            strafeTimer = Random.Range(0.1f, 0.3f);
-        }
-
-        return strafeDirection;
-    }
+    bool isLosingTarget;
     void LoseTarget()
     {
-        StartCoroutine(LoseTargetAfterDelay());
+        if (!isLosingTarget)
+        {
+            isLosingTarget = true;
+            Debug.Log(name + " AI: I lost target!");
+            StartCoroutine(LoseTargetAfterDelay());
+        }
     }
 
     IEnumerator LoseTargetAfterDelay()
     {
         yield return new WaitForSeconds(targetLostDelay);
         currentTarget = null;
+        isLosingTarget = false;
+        Debug.Log(name + " AI: I no longer have currentTarget");
     }
+
 }
