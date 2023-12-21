@@ -11,6 +11,7 @@ public class GameManager : MonoBehaviour
     public MainMenuUI menuUI;
     public GameObject playerPrefab;
     public GameObject enemyTheoPrefab;
+    public GameObject enemyTurretPrefab;
 
     public GameObject cursor;
     public GameObject player;
@@ -82,6 +83,10 @@ public class GameManager : MonoBehaviour
                 else if (rootObj.GetComponent<EnemySpawner>())
                 {
                     Instantiate(enemyTheoPrefab, rootObj.transform.position, Quaternion.identity);
+                }
+                else if (rootObj.GetComponent<TurretSpawner>())
+                {
+                    Instantiate(enemyTurretPrefab, rootObj.transform.position, Quaternion.identity);
                 }
             }
         }
