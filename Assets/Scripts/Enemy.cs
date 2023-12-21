@@ -276,40 +276,36 @@ public class Enemy : Entity
     IEnumerator KnockbackRoutine(Vector3 damageSourcePosition)
     {
         Vector3 knockbackDirection = (transform.position - damageSourcePosition).normalized;
-        Vector3 knockbackDestination = transform.position + knockbackDirection * knockbackStrength;
+        Vector3 potentialKnockbackDestination = transform.position + knockbackDirection * knockbackStrength;
 
+        // Check if the destination is on the NavMesh
         NavMeshHit hit;
-        if (NavMesh.SamplePosition(knockbackDestination, out hit, knockbackStrength, NavMesh.AllAreas))
+        if (NavMesh.SamplePosition(potentialKnockbackDestination, out hit, knockbackStrength, NavMesh.AllAreas))
         {
-            knockbackDestination = hit.position; // Adjust destination to the closest valid position on NavMesh
+            // Apply knockback if the destination is valid
+            float timer = 0;
+            while (timer < knockbackDuration)
+            {
+                timer += Time.deltaTime;
+                transform.position = Vector3.Lerp(transform.position, hit.position, timer / knockbackDuration);
+                yield return null;
+            }
+        }
+        else
+        {
+            // If no valid position is found, don't apply knockback
+            Debug.LogWarning("No valid knockback position found on NavMesh.");
         }
 
-        // // Disable NavMeshAgent (if using) to manually control position
-        // bool wasAgentEnabled = navMeshAgent.enabled;
-        // if (wasAgentEnabled)
-        // {
-        //     navMeshAgent.enabled = false;
-        // }
-
-        float timer = 0;
-        while (timer < knockbackDuration)
+        // Once the knockback is complete, reset the NavMeshAgent's destination
+        if (navMeshAgent.enabled)
         {
-            timer += Time.deltaTime;
-            transform.position = Vector3.Lerp(transform.position, knockbackDestination, timer / knockbackDuration);
-            yield return null;
+            navMeshAgent.SetDestination(transform.position);
         }
 
-        // // Re-enable NavMeshAgent (if it was enabled before)
-        // if (wasAgentEnabled)
-        // {
-        //     navMeshAgent.enabled = true;
-        //     
-        // }
-        navMeshAgent.SetDestination(transform.position); // Set the agent's destination to the current position to stop it from moving
         isKnockedBack = false;
         isInvincible = false;
         Debug.Log("isInvincible false");
-        yield return null;
     }
 
 
