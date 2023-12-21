@@ -4,15 +4,9 @@ using UnityEngine;
 
 public class Turret : Enemy
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
+    public override void OnDamaged(float damage, Vector3 damageSourcePosition)
     {
-        
+        // Debug.Log("im just not gonna do it");
     }
 }

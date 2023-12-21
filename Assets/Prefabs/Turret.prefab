@@ -633,7 +633,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 106783d4c3563f94fa799e380b599454, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  owner: {fileID: 0}
+  owner: {fileID: 7200172967492555444}
 --- !u!54 &7906832240260727767
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1201,7 +1201,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f0eb03816e2184429962f8842d82aa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  hp: 0
+  hp: 100
   deleteAfterDeath: []
   isDead: 0
   team: 1
@@ -1217,13 +1217,13 @@ MonoBehaviour:
     m_Bits: 64
   currentTarget: {fileID: 0}
   targetLostDelay: 5
-  navMeshAgent: {fileID: 0}
+  navMeshAgent: {fileID: 9151400229011500022}
   meleeWeapon: {fileID: 0}
   attackEffect: {fileID: 0}
   attackRange: 5
   safeDistanceFromObstacle: 2
   rotationSpeed: 5
-  handsController: {fileID: 0}
+  handsController: {fileID: 3586662612709073718}
   minSeparationDistance: 1.5
   minimumDistanceToTarget: 0
   knockbackStrength: 1
@@ -1238,7 +1238,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 2
+  m_Speed: 0
   m_Acceleration: 90
   avoidancePriority: 50
   m_AngularSpeed: 356
