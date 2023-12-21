@@ -12,7 +12,7 @@ public class Enemy : Entity
     public LayerMask obstacleMask;
     
     public GameObject currentTarget;
-    public float targetLostDelay = 1f;
+    public float targetLostDelay = 5f;
     public NavMeshAgent navMeshAgent;
     public MeleeWeapon meleeWeapon;
     
@@ -24,6 +24,8 @@ public class Enemy : Entity
     public Animator handsController;
 
     public float minSeparationDistance = 1.5f;
+
+    Vector3 combinedDirection;
     
     float distanceToCurrentTarget = float.MaxValue;
     
@@ -79,7 +81,7 @@ public class Enemy : Entity
             // if target is behind a obstacle
             if (Physics.Raycast(transform.position, dirToTarget, distanceToTarget, obstacleMask))
             {
-                //continue;
+                continue;
             }
 
             if (target.root.gameObject != currentTarget)
@@ -105,6 +107,21 @@ public class Enemy : Entity
             {
                 PrepareAttackTarget();
             }
+            else
+            {
+                // Create a list of contexts
+                List<AIContext> contexts = new List<AIContext>();
+                Vector3 dirToTarget = (currentTarget.transform.position - transform.position).normalized;
+                contexts.Add(new AIContext(dirToTarget, 1.0f)); // Higher weight for target direction
+
+                // Separation context
+                Vector3 separationVector = CalculateSeparationVector();
+                contexts.Add(new AIContext(separationVector, 0.5f)); // Adjust weight as needed
+
+                // Combine contexts
+                combinedDirection = CombineContexts(contexts);
+
+            }
         }
     }
     public float minimumDistanceToTarget;
@@ -112,23 +129,9 @@ public class Enemy : Entity
     {
         if (currentTarget)
         {
-            float distanceToTarget = Vector3.Distance(transform.position, currentTarget.transform.position);
-            if (distanceToTarget > attackRange)
+            if (distanceToCurrentTarget > attackRange)
             {
-                Vector3 dirToTarget = (currentTarget.transform.position - transform.position).normalized;
-                Vector3 separationVector = CalculateSeparationVector();
-
-                // Apply a weight to the separation vector
-                float separationWeight = 0.5f; // Adjust this value to control the influence of separation
-                Vector3 weightedSeparation = separationVector.normalized * separationWeight;
-
-                // Combine the direction to the target with the weighted separation vector
-                Vector3 combinedDirection = dirToTarget + weightedSeparation;
-
-                // Calculate the final destination
-                Vector3 finalDestination = transform.position + combinedDirection * distanceToTarget;
-
-                navMeshAgent.SetDestination(finalDestination);
+                navMeshAgent.SetDestination(transform.position + combinedDirection * distanceToCurrentTarget);
                 navMeshAgent.isStopped = false;
             }
             else
@@ -140,30 +143,7 @@ public class Enemy : Entity
         {
             navMeshAgent.ResetPath();
         }
-        Vector3 CalculateSeparationVector()
-        {
-            Vector3 separationVector = Vector3.zero;
-            int neighbors = 0;
-
-            Collider[] hits = Physics.OverlapSphere(transform.position, minSeparationDistance);
-            foreach (Collider hit in hits)
-            {
-                if (hit.CompareTag("EnemyHurtbox") && !hit.transform.IsChildOf(transform))
-                {
-                    Vector3 awayFromNeighbor = transform.position - hit.transform.position;
-                    separationVector += awayFromNeighbor;
-                    neighbors++;
-                    Debug.Log("added neighbor:" + hit.GetComponentInParent<Entity>().gameObject.name);
-                }
-            }
-
-            if (neighbors > 0)
-            {
-                separationVector /= neighbors; // Average the separation
-            }
-
-            return separationVector;
-        }
+        
     }
 
     bool isLosingTarget;
@@ -235,16 +215,113 @@ public class Enemy : Entity
         float distanceToTarget = Vector3.Distance(transform.position, currentTarget.transform.position);
         return distanceToTarget <= attackRange;
     }
-
-    class Context
+    Vector3 CalculateSeparationVector()
     {
-        public Vector3 direction;
-        public float weight;
+        Vector3 separationVector = Vector3.zero;
+        int neighbors = 0;
 
-        public Context(Vector3 direction, float weight)
+        Collider[] hits = Physics.OverlapSphere(transform.position, minSeparationDistance);
+        foreach (Collider hit in hits)
         {
-            this.direction = direction;
-            this.weight = weight;
+            if (hit.CompareTag("EnemyHurtbox") && !hit.transform.IsChildOf(transform))
+            {
+                Vector3 awayFromNeighbor = transform.position - hit.transform.position;
+                separationVector += awayFromNeighbor;
+                neighbors++;
+            }
         }
+
+        if (neighbors > 0)
+        {
+            separationVector /= neighbors; // Average the separation
+        }
+
+        return separationVector;
+    }
+    
+    Vector3 CombineContexts(List<AIContext> contexts)
+    {
+        Vector3 combinedDirection = Vector3.zero;
+        float totalWeight = 0f;
+
+        foreach (AIContext context in contexts)
+        {
+            combinedDirection += context.direction.normalized * context.weight;
+            totalWeight += context.weight;
+        }
+
+        if (totalWeight > 0f)
+        {
+            combinedDirection /= totalWeight; // Normalize combined direction by total weight
+        }
+
+        return combinedDirection;
+    }
+
+    public float knockbackStrength = 1f;
+    public float knockbackDuration = 1f;
+    bool isKnockedBack = false;
+
+    public override void OnDamaged(float damage, Vector3 damageSourcePosition)
+    {
+        base.OnDamaged(damage, damageSourcePosition);
+        Debug.Log("I took damage");
+        isKnockedBack = true;
+        isInvincible = true;
+        Debug.Log("isInvincible true");
+        handsController.Play("Idle");
+        StartCoroutine(KnockbackRoutine(damageSourcePosition));
+    }
+
+    IEnumerator KnockbackRoutine(Vector3 damageSourcePosition)
+    {
+        Vector3 knockbackDirection = (transform.position - damageSourcePosition).normalized;
+        Vector3 knockbackDestination = transform.position + knockbackDirection * knockbackStrength;
+
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(knockbackDestination, out hit, knockbackStrength, NavMesh.AllAreas))
+        {
+            knockbackDestination = hit.position; // Adjust destination to the closest valid position on NavMesh
+        }
+
+        // // Disable NavMeshAgent (if using) to manually control position
+        // bool wasAgentEnabled = navMeshAgent.enabled;
+        // if (wasAgentEnabled)
+        // {
+        //     navMeshAgent.enabled = false;
+        // }
+
+        float timer = 0;
+        while (timer < knockbackDuration)
+        {
+            timer += Time.deltaTime;
+            transform.position = Vector3.Lerp(transform.position, knockbackDestination, timer / knockbackDuration);
+            yield return null;
+        }
+
+        // // Re-enable NavMeshAgent (if it was enabled before)
+        // if (wasAgentEnabled)
+        // {
+        //     navMeshAgent.enabled = true;
+        //     
+        // }
+        navMeshAgent.SetDestination(transform.position); // Set the agent's destination to the current position to stop it from moving
+        isKnockedBack = false;
+        isInvincible = false;
+        Debug.Log("isInvincible false");
+        yield return null;
+    }
+
+
+}
+public class AIContext
+{
+    public Vector3 direction;
+    public float weight;
+
+    public AIContext(Vector3 direction, float weight)
+    {
+        this.direction = direction;
+        this.weight = weight;
     }
 }

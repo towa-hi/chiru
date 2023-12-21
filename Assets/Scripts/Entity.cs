@@ -16,10 +16,22 @@ public class Entity : MonoBehaviour
     public List<GameObject> deleteAfterDeath;
     public bool isDead = false;
     public Team team;
+    public bool isInvincible;
     void Awake()
     {
         
     }
+
+    public virtual void OnDamaged(float damage, Vector3 damageSourcePosition)
+    {
+        if (!isInvincible)
+        {
+            ApplyDamage(damage);
+        }
+    }
+    
+
+    
     public void ApplyDamage(float damage)
     {
         Debug.Log("applying damage");

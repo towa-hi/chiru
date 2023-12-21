@@ -163,6 +163,7 @@ MonoBehaviour:
   - {fileID: 1791863323871211773}
   isDead: 0
   team: 0
+  isInvincible: 0
   debugVisualization: 1
   cursor: {fileID: 0}
   characterController: {fileID: 5468403399836768465}

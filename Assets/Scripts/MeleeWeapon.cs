@@ -66,7 +66,7 @@ public class MeleeWeapon : MonoBehaviour
             return;
         }
         // do damage
-        hurtbox.owner.ApplyDamage(damage);
+        hurtbox.owner.OnDamaged(damage, owner.transform.position);
     }
 }
 

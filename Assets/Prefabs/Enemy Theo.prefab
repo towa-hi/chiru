@@ -1205,6 +1205,7 @@ MonoBehaviour:
   - {fileID: 5214111746155863663}
   isDead: 0
   team: 1
+  isInvincible: 0
   hearingRadius: 6
   visionRadius: 6
   visionFOV: 180
@@ -1225,6 +1226,8 @@ MonoBehaviour:
   handsController: {fileID: 3586662612709073718}
   minSeparationDistance: 1
   minimumDistanceToTarget: 1.5
+  knockbackStrength: 5
+  knockbackDuration: 1
 --- !u!195 &9151400229011500022
 NavMeshAgent:
   m_ObjectHideFlags: 0
@@ -1235,7 +1238,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 3
+  m_Speed: 0
   m_Acceleration: 90
   avoidancePriority: 50
   m_AngularSpeed: 356
