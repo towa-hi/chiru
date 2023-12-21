@@ -42,24 +42,7 @@ public class Lighsaber : MonoBehaviour
     }
     void Start()
     {
-        _meshParent.transform.rotation = Quaternion.identity;
-        
-        //Init mesh and triangles
-        _meshParent.transform.position = Vector3.zero;
-        _mesh = new Mesh();
-        _meshParent.GetComponent<MeshFilter>().mesh = _mesh;
-
-        Material trailMaterial = Instantiate(_meshParent.GetComponent<MeshRenderer>().sharedMaterial);
-        trailMaterial.SetColor("Color_8F0C0815", _colour);
-        _meshParent.GetComponent<MeshRenderer>().sharedMaterial = trailMaterial;
-
-        _vertices = new Vector3[_trailFrameLength * NUM_VERTICES];
-        _triangles = new int[_vertices.Length];
-
-        //Set starting position for tip and base
-        _previousTipPosition = _tip.transform.position;
-        _previousBasePosition = _base.transform.position;
-        _meshParent.transform.parent = null;
+        Init();
     }
     
     void LateUpdate()
@@ -83,6 +66,27 @@ public class Lighsaber : MonoBehaviour
         _frameCount += NUM_VERTICES;
     }
 
+    void Init()
+    {
+        _meshParent.transform.rotation = Quaternion.identity;
+        
+        //Init mesh and triangles
+        _meshParent.transform.position = Vector3.zero;
+        _mesh = new Mesh();
+        _meshParent.GetComponent<MeshFilter>().mesh = _mesh;
+
+        Material trailMaterial = Instantiate(_meshParent.GetComponent<MeshRenderer>().sharedMaterial);
+        trailMaterial.SetColor("Color_8F0C0815", _colour);
+        _meshParent.GetComponent<MeshRenderer>().sharedMaterial = trailMaterial;
+
+        _vertices = new Vector3[_trailFrameLength * NUM_VERTICES];
+        _triangles = new int[_vertices.Length];
+
+        //Set starting position for tip and base
+        _previousTipPosition = _tip.transform.position;
+        _previousBasePosition = _base.transform.position;
+        _meshParent.transform.parent = null;
+    }
     void UpdateVertices(Vector3 tipPosition, Vector3 basePosition)
     {
         int startIndex = _frameCount % _vertices.Length;
