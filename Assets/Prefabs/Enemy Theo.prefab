@@ -550,7 +550,7 @@ Rigidbody:
   m_IsKinematic: 1
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 3
 --- !u!1 &4640273524408128806
 GameObject:
   m_ObjectHideFlags: 0
@@ -1002,8 +1002,10 @@ GameObject:
   - component: {fileID: 7613546897925611191}
   - component: {fileID: 8591481812540155973}
   - component: {fileID: 3053542773499594147}
+  - component: {fileID: 1545625623614197245}
+  - component: {fileID: 2153320138296889539}
   m_Layer: 8
-  m_Name: Hurtbox
+  m_Name: Hitbox
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1088,11 +1090,61 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f18fb03e89d9ca34d8eea45e7d157374, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  owner: {fileID: 0}
+  owner: {fileID: 7311908974155904950}
   debugVisualization: 1
   damage: 10
   currentAttackPhase: 0
   debugRenderer: {fileID: 8591481812540155973}
+--- !u!136 &1545625623614197245
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6577723626911482649}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5000011
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0.000000059604638, y: 2.7755576e-16, z: -0.0000019967556}
+--- !u!54 &2153320138296889539
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6577723626911482649}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 3
 --- !u!1 &6937206356061447010
 GameObject:
   m_ObjectHideFlags: 0
@@ -1200,6 +1252,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 21ea6e91d7c65ce4db8c1a47ccb5799f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHp: 0
   hp: 100
   deleteAfterDeath:
   - {fileID: 5214111746155863663}
@@ -1238,7 +1291,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: 0
   m_Radius: 0.5
-  m_Speed: 2
+  m_Speed: 0
   m_Acceleration: 90
   avoidancePriority: 50
   m_AngularSpeed: 356

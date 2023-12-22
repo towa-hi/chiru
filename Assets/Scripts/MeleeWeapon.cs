@@ -44,13 +44,13 @@ public class MeleeWeapon : MonoBehaviour
 
     void OnTriggerEnter(Collider other)
     {
-        // if dead
-        if (owner.isDead)
+        // if not attacking
+        if (currentAttackPhase != AttackPhase.ATTACKING)
         {
             return;
         }
-        // if not attacking
-        if (currentAttackPhase != AttackPhase.ATTACKING)
+        // if dead
+        if (owner.isDead)
         {
             return;
         }

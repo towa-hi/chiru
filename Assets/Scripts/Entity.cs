@@ -12,6 +12,7 @@ public enum Team
 // Entity is ALWAYS A ROOT OBJECT
 public class Entity : MonoBehaviour
 {
+    public float maxHp;
     public float hp;
     public List<GameObject> deleteAfterDeath;
     public bool isDead = false;

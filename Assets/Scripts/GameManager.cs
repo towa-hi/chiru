@@ -67,9 +67,12 @@ public class GameManager : MonoBehaviour
     {
         if (scene.name == "GameScene")
         {
-            foreach (GameObject rootObj in UnityEngine.SceneManagement.SceneManager.GetActiveScene().GetRootGameObjects())
+            foreach (GameObject rootObj in SceneManager.GetActiveScene().GetRootGameObjects())
             {
-                Debug.Log(rootObj.name);
+                if (!rootObj.activeInHierarchy)
+                {
+                    continue;
+                }
                 if (rootObj.GetComponent<Cursor>())
                 {
                     cursor = rootObj;
@@ -81,10 +84,12 @@ public class GameManager : MonoBehaviour
                 }
                 else if (rootObj.GetComponent<EnemySpawner>())
                 {
+                    Debug.Log("Spawning theo");
                     Instantiate(enemyTheoPrefab, rootObj.transform.position, Quaternion.identity);
                 }
                 else if (rootObj.GetComponent<TurretSpawner>())
                 {
+                    Debug.Log("Spawning turret");
                     Instantiate(enemyTurretPrefab, rootObj.transform.position, Quaternion.identity);
                 }
             }

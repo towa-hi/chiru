@@ -29,7 +29,7 @@ public class Projectile : MonoBehaviour
 
     void Update()
     {
-        if (gameObject.activeSelf)
+        if (gameObject.activeInHierarchy)
         {
             transform.Translate(Vector3.forward * speed * Time.deltaTime);
         }
@@ -37,7 +37,7 @@ public class Projectile : MonoBehaviour
     }
     void OnTriggerEnter(Collider other)
     {
-        if (gameObject.activeSelf)
+        if (gameObject.activeInHierarchy)
         {
             //Debug.Log("other: " + other.gameObject + " isactive: " + gameObject.activeSelf);
             if (other.CompareTag("Wall"))

@@ -1234,6 +1234,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f0eb03816e2184429962f8842d82aa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHp: 0
   hp: 40
   deleteAfterDeath: []
   isDead: 0

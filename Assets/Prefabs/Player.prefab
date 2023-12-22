@@ -158,6 +158,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a4c5c636339d3794ea60658e0c80f203, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  maxHp: 0
   hp: 100
   deleteAfterDeath:
   - {fileID: 1791863323871211773}
@@ -181,6 +182,8 @@ MonoBehaviour:
   attackButtonPressed: 0
   attackEffect: {fileID: 2051746814890462960}
   parryTriggerSetFlag: 0
+  knockbackStrength: 1
+  knockbackDuration: 1
 --- !u!143 &5468403399836768465
 CharacterController:
   m_ObjectHideFlags: 0
@@ -430,6 +433,7 @@ GameObject:
   - component: {fileID: 137855888150681945}
   - component: {fileID: 5551306560224662027}
   - component: {fileID: 773670713951583036}
+  - component: {fileID: 2661022040518564232}
   m_Layer: 7
   m_Name: Hurtbox
   m_TagString: PlayerHurtbox
@@ -519,7 +523,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -540,6 +544,33 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   owner: {fileID: 8591543532338990382}
+--- !u!54 &2661022040518564232
+Rigidbody:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1736043069297180989}
+  serializedVersion: 4
+  m_Mass: 1
+  m_Drag: 0
+  m_AngularDrag: 0.05
+  m_CenterOfMass: {x: 0, y: 0, z: 0}
+  m_InertiaTensor: {x: 1, y: 1, z: 1}
+  m_InertiaRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ImplicitCom: 1
+  m_ImplicitTensor: 1
+  m_UseGravity: 1
+  m_IsKinematic: 1
+  m_Interpolate: 0
+  m_Constraints: 0
+  m_CollisionDetection: 3
 --- !u!1 &1791863323871211773
 GameObject:
   m_ObjectHideFlags: 0

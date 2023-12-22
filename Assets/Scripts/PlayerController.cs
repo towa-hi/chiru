@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.InputSystem;
 
 public class PlayerController : Entity
@@ -91,6 +92,18 @@ public class PlayerController : Entity
             parryTriggerSetFlag = false;
         }
     }
+
+    void SetInput(bool inputEnabled)
+    {
+        if (inputEnabled)
+        {
+            input.CharacterControls.Enable();
+        }
+        else
+        {
+            input.CharacterControls.Disable();
+        }
+    }
     
     bool attackTriggerSetFlag;
     void HandleAttackInputHeld()
@@ -164,6 +177,7 @@ public class PlayerController : Entity
         }
 
         currentVelocity = targetVelocity;
+        // add forces
         characterController.Move(currentVelocity * Time.deltaTime);
     }
 
@@ -191,5 +205,48 @@ public class PlayerController : Entity
                 gun.SetFireDestination(cursor.transform);
             }
         }
+    }
+
+    public override void OnDamaged(float damage, Vector3 damageSourcePosition)
+    {
+        base.OnDamaged(damage, damageSourcePosition);
+        Debug.Log("Player took damage");
+        isInvincible = true;
+        SetInput(false);
+        StartCoroutine(KnockbackRoutine(damageSourcePosition));
+    }
+    
+    public float knockbackStrength = 1f;
+    public float knockbackDuration = 1f;
+    bool isKnockedBack = false;
+    
+    IEnumerator KnockbackRoutine(Vector3 damageSourcePosition)
+    {
+        Vector3 knockbackDirection = (transform.position - damageSourcePosition).normalized;
+        Vector3 potentialKnockbackDestination = transform.position + knockbackDirection * knockbackStrength;
+
+        // Check if the destination is on the NavMesh
+        NavMeshHit hit;
+        if (NavMesh.SamplePosition(potentialKnockbackDestination, out hit, knockbackStrength, NavMesh.AllAreas))
+        {
+            // Apply knockback if the destination is valid
+            float timer = 0;
+            while (timer < knockbackDuration)
+            {
+                timer += Time.deltaTime;
+                transform.position = Vector3.Lerp(transform.position, hit.position, timer / knockbackDuration);
+                yield return null;
+            }
+        }
+        else
+        {
+            // If no valid position is found, don't apply knockback
+            Debug.LogWarning("No valid knockback position found on NavMesh.");
+        }
+        
+        SetInput(true);
+        isKnockedBack = false;
+        isInvincible = false;
+        Debug.Log("isInvincible false");
     }
 }
