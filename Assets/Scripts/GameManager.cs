@@ -29,7 +29,6 @@ public class GameManager : MonoBehaviour
                 Destroy(gameObject);
             }
         }
-        Debug.Log("baba boey");
         if (SceneManager.GetActiveScene().name == "GameScene")
         {
             LoadLevel("GameScene");

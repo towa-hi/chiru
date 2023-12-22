@@ -78,6 +78,7 @@ public class ObjectPoolManager : MonoBehaviour
     
     private void ExpandPool(string tag)
     {
+        Debug.Log("ASSPULLING A NEW OBJECT IN POOL");
         Pool pool = pools.Find(p => p.tag == tag);
         if (pool != null)
         {
@@ -91,4 +92,15 @@ public class ObjectPoolManager : MonoBehaviour
         }
     }
 
+    public void ReturnToPool(string tag, GameObject objectToReturn)
+    {
+        if (!poolDictionary.ContainsKey(tag))
+        {
+            return;
+        }
+
+        objectToReturn.transform.position = transform.position;
+        objectToReturn.SetActive(false);
+        poolDictionary[tag].Enqueue(objectToReturn);
+    }
 }

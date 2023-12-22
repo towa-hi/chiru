@@ -4,14 +4,13 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    public float speed = 10f;
+    public float speed = 1f;
     public float lifetime = 2f;
     public int damage = 1;
     public Vector3 angle = Vector3.zero;
     
     // Tag of the entity that fired the projectile
-    private string shooterTag;
-
+    public Entity owner;
     private void OnEnable()
     {
         StartCoroutine(DeactivateAfterLifetime());
@@ -23,61 +22,59 @@ public class Projectile : MonoBehaviour
         gameObject.SetActive(false);
     }
 
-    public void SetShooterTag(string tag)
+    public void SetShooterTag(Entity shooter)
     {
-        shooterTag = tag;
+        owner = shooter;
     }
 
     void Update()
     {
-        transform.Translate(Vector3.forward * speed * Time.deltaTime);
+        if (gameObject.activeSelf)
+        {
+            transform.Translate(Vector3.forward * speed * Time.deltaTime);
+        }
         
     }
     void OnTriggerEnter(Collider other)
     {
-        if (other.gameObject.tag == "Floor")
+        if (gameObject.activeSelf)
         {
-            return;
-        }
-        Debug.Log(other.gameObject.name);
-        Debug.Log("shooter is " + shooterTag + " and its collided with " + other.gameObject.tag);
-        bool collided = false;
-        switch (other.gameObject.tag)
-        {
-            case "Enemy":
-                if (shooterTag != "Enemy")
-                {
-                    //collision.gameObject.GetComponent<EnemyHealth>().TakeDamage(damage);
-                    collided = true;
-                }
-                break;
-
-            case "Player":
-                if (shooterTag != "Player")
-                {
-                    //collision.gameObject.GetComponent<PlayerHealth>().TakeDamage(damage);
-                    collided = true;
-                }
-                break;
-            
-            case "Projectile":
-                break;
-            
-            case "Wall":
-            default:
-                collided = true;
-                break;
-        }
-
-        if (collided)
-        {
-            Debug.Log("I have collided with " + other.gameObject.tag + "now I will die");
+            //Debug.Log("other: " + other.gameObject + " isactive: " + gameObject.activeSelf);
+            if (other.CompareTag("Wall"))
+            {
+                //Debug.Log("Bullet collided with wall " + other.gameObject);
+                Deactivate();
+                return;
+            }
+            Hurtbox hurtbox = other.gameObject.GetComponent<Hurtbox>();
+            if (!hurtbox)
+            {
+                //Debug.Log("Bullet passed through obj " + other.gameObject);
+                return;
+            }
+            // if is shooter
+            if (hurtbox.owner == owner)
+            {
+                //Debug.Log("Bullet passed through self " + hurtbox.owner);
+                return;
+            }
+            // if is same team
+            if (hurtbox.owner.team == owner.team)
+            {
+                //Debug.Log("Bullet collided with friendly " + hurtbox.owner);
+                Deactivate();
+                return;
+            }
+            //Debug.Log("Bullet collided with player " + hurtbox.owner);
+            hurtbox.owner.OnDamaged(damage, owner.transform.position);
             Deactivate();
         }
     }
 
     void Deactivate()
     {
-        gameObject.SetActive(false);
+        ObjectPoolManager.ins.ReturnToPool("Projectile", this.gameObject);
+        Debug.Log("I died");
+        
     }
 }

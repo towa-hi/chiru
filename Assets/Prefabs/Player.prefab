@@ -306,7 +306,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -0.177, y: 0, z: 0}
-  m_LocalScale: {x: 0.84, y: 1.43, z: -0.21}
+  m_LocalScale: {x: 0.84, y: 1.43, z: 0.21}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 5972608965339729546}
@@ -429,6 +429,7 @@ GameObject:
   - component: {fileID: 4272712881644286663}
   - component: {fileID: 137855888150681945}
   - component: {fileID: 5551306560224662027}
+  - component: {fileID: 773670713951583036}
   m_Layer: 7
   m_Name: Hurtbox
   m_TagString: PlayerHurtbox
@@ -526,6 +527,19 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &773670713951583036
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1736043069297180989}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 106783d4c3563f94fa799e380b599454, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  owner: {fileID: 8591543532338990382}
 --- !u!1 &1791863323871211773
 GameObject:
   m_ObjectHideFlags: 0

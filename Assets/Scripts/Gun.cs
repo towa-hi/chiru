@@ -80,7 +80,7 @@ public class Gun : MonoBehaviour
             parent = gameObject.transform.parent.tag;
             Debug.Log("before setting shooter tag the object is: " + parent);
             projectile.tag = "Projectile";
-            projectile.GetComponent<Projectile>().SetShooterTag(parent);
+            //projectile.GetComponent<Projectile>().SetShooterTag(parent);
         }
 
     }

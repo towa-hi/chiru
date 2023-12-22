@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class CameraManager : MonoBehaviour
 {
-    [SerializeField] PlayerController player;
-    [SerializeField] Cursor cursor;
-    
     public Vector3 verticalOffset;
     public float maxForwardOffset;
     public float lerpSpeed;
@@ -14,9 +11,11 @@ public class CameraManager : MonoBehaviour
     
     void Update()
     {
-        
-        Vector3 newFocus = FindSweetSpot();
-        transform.position = Vector3.Lerp(transform.position, newFocus + verticalOffset, lerpSpeed * Time.deltaTime);
+        if (GameManager.ins.player && GameManager.ins.cursor)
+        {
+            Vector3 newFocus = FindSweetSpot();
+            transform.position = Vector3.Lerp(transform.position, newFocus + verticalOffset, lerpSpeed * Time.deltaTime);
+        }
     }
 
     Vector3 FindSweetSpot()

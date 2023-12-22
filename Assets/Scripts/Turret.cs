@@ -6,17 +6,21 @@ using UnityEngine.InputSystem.XR.Haptics;
 
 public class Turret : Enemy
 {
-    [SerializeField] private Gun gun;
+
 
     public void Awake()
     {
-        gun.SetFireOrigin(transform);
-        gun.objectPoolManager = ObjectPoolManager.ins;
+
     }
 
     public override void OnDamaged(float damage, Vector3 damageSourcePosition)
     {
         // Debug.Log("im just not gonna do it");
+        if (!isInvincible)
+        {
+            ApplyDamage(damage);
+        }
+        Debug.Log("I took damage");
     }
     
     protected override void PrepareAttackTarget()
@@ -34,24 +38,37 @@ public class Turret : Enemy
         transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
         if (IsFacingTarget() && IsWithinAttackRange())
         {
-            if (gun.fireDestination != currentTarget.transform)
-            {
-                gun.SetFireDestination(currentTarget.transform);   
-            }
+            if (isReadyToFire)
             AttackTarget();
         }
     }
 
+    bool isReadyToFire = true;
+    
     protected override void AttackTarget()
     {
         AnimatorStateInfo currentState = handsController.GetCurrentAnimatorStateInfo(0);
-        if (currentState.IsName("Idle"))
-        {
-            handsController.SetTrigger("AttackTrigger");
-            if (gun)
-            {
-                gun.Shoot();    
-            }
-        }
+        Debug.Log("shooting");
+        Shoot();
+        StartCoroutine(ResetFire());
     }
+
+    public GameObject projectileSpawner;
+    void Shoot()
+    {
+        Quaternion projectileRotation = Quaternion.LookRotation(projectileSpawner.transform.forward);
+        GameObject projectile = ObjectPoolManager.ins.GetFromPool("Projectile", projectileSpawner.transform.position,
+            projectileRotation);
+        projectile.SetActive(true);
+        projectile.tag = "Projectile";
+        projectile.GetComponent<Projectile>().SetShooterTag(this);
+    }
+
+    IEnumerator ResetFire()
+    {
+        isReadyToFire = false;
+        yield return new WaitForSeconds(0.5f);
+        isReadyToFire = true;
+    }
+
 }
