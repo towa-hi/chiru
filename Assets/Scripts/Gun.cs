@@ -12,6 +12,7 @@ public class Gun : MonoBehaviour
     public float scatterAngle = 30f;
     public float deviationAngle = 20f;
     public float fireRate = 5f;
+    public float offsetDistance = 1.0f;
     public ObjectPoolManager objectPoolManager;
     private float nextFireTime = 0f;
 
@@ -51,7 +52,7 @@ public class Gun : MonoBehaviour
     
     }
 
-    void Shoot()
+    public void Shoot()
     {
         Vector3 direction = (fireDestination.position - fireOrigin.position).normalized;
         float angle = Mathf.Atan2(direction.z, direction.x) * Mathf.Rad2Deg;
@@ -73,7 +74,7 @@ public class Gun : MonoBehaviour
             Vector3 bulletDirection = new Vector3(Mathf.Cos(currentAngle * Mathf.Deg2Rad), 0f, Mathf.Sin(currentAngle * Mathf.Deg2Rad));
             Quaternion bulletRotation = Quaternion.LookRotation(bulletDirection, Vector3.up);
 
-            Vector3 spawnPosition = fireOrigin.position;
+            Vector3 spawnPosition = fireOrigin.position + (bulletDirection * offsetDistance);
             GameObject projectile = objectPoolManager.GetFromPool("Projectile", spawnPosition, bulletRotation);
             projectile.SetActive(true);
             parent = gameObject.transform.parent.tag;

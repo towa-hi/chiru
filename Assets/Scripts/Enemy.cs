@@ -165,7 +165,7 @@ public class Enemy : Entity
         Debug.Log(name + " AI: I no longer have currentTarget");
     }
 
-    void PrepareAttackTarget()
+    protected virtual void PrepareAttackTarget()
     {
         if (currentTarget == null)
         {
@@ -184,7 +184,7 @@ public class Enemy : Entity
         }
     }
 
-    void AttackTarget()
+    protected virtual void AttackTarget()
     {
         AnimatorStateInfo currentState = handsController.GetCurrentAnimatorStateInfo(0);
         if (currentState.IsName("Idle"))
@@ -193,7 +193,7 @@ public class Enemy : Entity
         }
     }
 
-    bool IsFacingTarget()
+    public bool IsFacingTarget()
     {
         if (currentTarget == null)
         {
@@ -205,7 +205,7 @@ public class Enemy : Entity
         return angleToTarget < 10f; // Adjust this value as needed
     }
     
-    bool IsWithinAttackRange()
+    public bool IsWithinAttackRange()
     {
         if (currentTarget == null)
         {

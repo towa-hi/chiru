@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ObjectPoolManager : MonoBehaviour
 {
+    public static ObjectPoolManager ins;
+
     [System.Serializable]
     public class Pool
     {
@@ -15,6 +17,21 @@ public class ObjectPoolManager : MonoBehaviour
     public List<Pool> pools;
     public Dictionary<string, Queue<GameObject>> poolDictionary;
 
+    void Awake()
+    {
+        if (ins == null)
+        {
+            ins = this;
+        }
+        else
+        {
+            if (this != ins)
+            {
+                Destroy(gameObject);
+            }
+        }
+    }
+    
     void Start()
     {
         poolDictionary = new Dictionary<string, Queue<GameObject>>();
