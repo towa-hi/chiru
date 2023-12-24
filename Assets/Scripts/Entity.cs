@@ -18,6 +18,8 @@ public class Entity : MonoBehaviour
     public bool isDead = false;
     public Team team;
     public bool isInvincible;
+
+    public bool isKnockedBack;
     void Awake()
     {
         

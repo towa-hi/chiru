@@ -199,9 +199,9 @@ public class Enemy : Entity
         {
             return false;
         }
-        
         Vector3 directionToTarget = (currentTarget.transform.position - transform.position).normalized;
         float angleToTarget = Vector3.Angle(transform.forward, directionToTarget);
+        Debug.Log(angleToTarget);
         return angleToTarget < 10f; // Adjust this value as needed
     }
     
@@ -260,7 +260,6 @@ public class Enemy : Entity
 
     public float knockbackStrength = 1f;
     public float knockbackDuration = 1f;
-    bool isKnockedBack = false;
 
     public override void OnDamaged(float damage, Vector3 damageSourcePosition)
     {

@@ -224,7 +224,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: currentAttackPhase
-    path: Model/Hand Origin/Hand/Hand Rotation/Weapon/Hurtbox
+    path: Model/Hand Origin/Hand/Hand Rotation/Weapon/Hitbox
     classID: 114
     script: {fileID: 11500000, guid: f18fb03e89d9ca34d8eea45e7d157374, type: 3}
     flags: 1
@@ -264,7 +264,7 @@ AnimationClip:
       isIntCurve: 0
       isSerializeReferenceCurve: 0
     - serializedVersion: 2
-      path: 3157162214
+      path: 3913059832
       attribute: 3761176292
       script: {fileID: 11500000, guid: f18fb03e89d9ca34d8eea45e7d157374, type: 3}
       typeID: 114
@@ -860,7 +860,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: currentAttackPhase
-    path: Model/Hand Origin/Hand/Hand Rotation/Weapon/Hurtbox
+    path: Model/Hand Origin/Hand/Hand Rotation/Weapon/Hitbox
     classID: 114
     script: {fileID: 11500000, guid: f18fb03e89d9ca34d8eea45e7d157374, type: 3}
     flags: 1
