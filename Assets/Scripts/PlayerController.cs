@@ -67,6 +67,11 @@ public class PlayerController : Entity
         {
             return;
         }
+
+        if (isRiposte)
+        {
+            return;
+        }
         float currentRotationSpeed = meleeWeapon.currentAttackPhase == AttackPhase.IDLE ? rotationSpeed : 0; // set rotation depending on if idle
         Vector3 cursorPos = GameManager.ins.cursor.transform.position;
         cursorPos.y = transform.position.y;
@@ -88,33 +93,10 @@ public class PlayerController : Entity
             {
                 return;
             }
-            Collider[] hitColliders = Physics.OverlapSphere(transform.position, riposteDistance);
-            Entity closestParriedEntity = null;
-            float closestDistance = float.MaxValue;
-            foreach (Collider collider in hitColliders)
+            Entity closestParriedEntity = FindClosestParriedEntity();
+            if (closestParriedEntity)
             {
-                if (collider.CompareTag("EnemyHurtbox"))
-                {
-                    Entity entity = collider.GetComponentInParent<Entity>();
-                    if (entity.isParried)
-                    {
-                        Vector3 directionToEntity = (entity.transform.position - transform.position).normalized;
-                        float angleToEntity = Vector3.Angle(transform.forward, directionToEntity);
-                        float distanceToEntity = Vector3.Distance(transform.position, entity.transform.position);
-                        if (distanceToEntity < closestDistance && angleToEntity < 45) // 45 degrees as an example
-                        {
-                            closestParriedEntity = entity;
-                            closestDistance = distanceToEntity;
-                        }
-                    }
-                }
-            }
-            
-            if (closestParriedEntity != null)
-            {
-                isRiposte = true;
-                targetForRiposte = closestParriedEntity;
-                PerformRiposte();
+                PerformRiposte(closestParriedEntity);
                 return;
             }
             
@@ -154,13 +136,48 @@ public class PlayerController : Entity
         }
     }
 
-    void PerformRiposte()
+    Entity FindClosestParriedEntity()
     {
-        characterController.enabled = false;
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, riposteDistance);
+        Entity closestParriedEntity = null;
+        float closestDistance = float.MaxValue;
+        foreach (Collider collider in hitColliders)
+        {
+            if (collider.CompareTag("EnemyHurtbox"))
+            {
+                Entity entity = collider.GetComponentInParent<Entity>();
+                if (entity.isParried)
+                {
+                    Vector3 directionToEntity = (entity.transform.position - transform.position).normalized;
+                    float angleToEntity = Vector3.Angle(transform.forward, directionToEntity);
+                    float distanceToEntity = Vector3.Distance(transform.position, entity.transform.position);
+                    if (distanceToEntity < closestDistance && angleToEntity < 45) // 45 degrees as an example
+                    {
+                        closestParriedEntity = entity;
+                        closestDistance = distanceToEntity;
+                    }
+                }
+            }
+        }
+        return closestParriedEntity;
+    }
+
+    void PerformRiposte(Entity target)
+    {
+        isRiposte = true;
+        targetForRiposte = target;
         Vector3 enemyPosition = targetForRiposte.transform.position;
-        Vector3 directionToEnemy = (enemyPosition - transform.position);
-        transform.position = enemyPosition - directionToEnemy * 1.0f;
-        transform.LookAt(enemyPosition);
+        Vector3 directionToEnemy = (enemyPosition - transform.position).normalized;
+        Vector3 newPosition = enemyPosition - directionToEnemy * 1.0f; // Adjust the multiplier as needed
+        newPosition.y = transform.position.y; // Keep the player's original y position to avoid moving up or down
+
+        // Calculate the movement vector needed to reach the new position
+        Vector3 moveVector = newPosition - transform.position;
+
+        // Move the player to the new position
+        characterController.Move(moveVector);
+
+        transform.LookAt(new Vector3(enemyPosition.x, transform.position.y, enemyPosition.z));
         handsController.Play("Riposte");
         Debug.Log("Riposte started");
     }
@@ -170,7 +187,6 @@ public class PlayerController : Entity
         Debug.Log("Riposte ended");
         isRiposte = false;
         targetForRiposte = null;
-        characterController.enabled = true;
     }
     
     void HandleLeftActionInputHeld()
