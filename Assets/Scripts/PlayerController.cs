@@ -14,6 +14,7 @@ public class PlayerController : Entity
     public MeleeWeapon meleeWeapon;
     public Animator handsController;
     public Lighsaber attackEffect;
+    public Lighsaber shieldEffect;
     
     public float rotationSpeed;
     public float idleMovementSpeed;
@@ -166,6 +167,7 @@ public class PlayerController : Entity
     {
         isRiposte = true;
         targetForRiposte = target;
+        targetForRiposte.OnRiposte();
         Vector3 enemyPosition = targetForRiposte.transform.position;
         Vector3 directionToEnemy = (enemyPosition - transform.position).normalized;
         Vector3 newPosition = enemyPosition - directionToEnemy * 1.0f; // Adjust the multiplier as needed
@@ -186,6 +188,7 @@ public class PlayerController : Entity
     {
         Debug.Log("Riposte ended");
         isRiposte = false;
+        targetForRiposte.OnRiposteEnd();
         targetForRiposte = null;
     }
     
@@ -215,6 +218,7 @@ public class PlayerController : Entity
     {
         if (!meleeWeapon) return;
         attackEffect.SetEnabled(meleeWeapon.currentAttackPhase is AttackPhase.ATTACKING or AttackPhase.WINDDOWN);
+        shieldEffect.SetEnabled(isParrying);
     }
    
 

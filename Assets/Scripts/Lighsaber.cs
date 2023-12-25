@@ -23,10 +23,7 @@ public class Lighsaber : MonoBehaviour
     [SerializeField]
     [Tooltip("The number of frame that the trail should be rendered for")]
     private int _trailFrameLength = 3;
-
-    [SerializeField]
-    [ColorUsage(true, true)]
-    [Tooltip("The colour of the blade and trail")]
+    
     private Color _colour = Color.red;
 
     Mesh _mesh;
@@ -44,7 +41,6 @@ public class Lighsaber : MonoBehaviour
     {
         Init();
     }
-    
     void LateUpdate()
     {
         if(_frameCount == (_trailFrameLength * NUM_VERTICES))
@@ -66,7 +62,7 @@ public class Lighsaber : MonoBehaviour
         _frameCount += NUM_VERTICES;
     }
 
-    void Init()
+    public void Init()
     {
         _meshParent.transform.rotation = Quaternion.identity;
         

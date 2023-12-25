@@ -23,7 +23,7 @@ public class Entity : MonoBehaviour
     public Vector3 knockbackVector;
     Dictionary<Renderer, Color[]> originalColorsMap = new Dictionary<Renderer, Color[]>();
     public bool isParried;
-
+    public bool isParrying;
     Coroutine knockbackRoutine;
     
     public virtual void OnDamaged(GameObject source, float damage, Vector3 damageSourcePosition, float knockbackMagnitude, float knockbackDuration, bool applyInvincibility)
@@ -38,10 +38,7 @@ public class Entity : MonoBehaviour
                     return;
                 }
 
-                if (knockbackRoutine != null)
-                {
-                    StopCoroutine(knockbackRoutine);
-                }
+
                 knockbackRoutine = StartCoroutine(KnockbackRoutine(damageSourcePosition, knockbackMagnitude, knockbackDuration,
                     applyInvincibility));
             }
@@ -116,6 +113,14 @@ public class Entity : MonoBehaviour
         {
             Destroy(obj);
         }
+        if (knockbackRoutine != null)
+        {
+            StopCoroutine(knockbackRoutine);
+        }
+        if (parryCoroutine != null)
+        {
+            StopCoroutine(parryCoroutine);
+        }
         Destroy(gameObject, 1f);
         enabled = false;
     }
@@ -179,7 +184,7 @@ public class Entity : MonoBehaviour
     }
 
     public float parryDuration;
-    
+    public Coroutine parryCoroutine;
     public void OnParried()
     {
         Debug.Log("I got parried!");
@@ -189,10 +194,10 @@ public class Entity : MonoBehaviour
         SoundPlayer soundPlayer = GetComponent<SoundPlayer>();
         if (soundPlayer)
         {
-            soundPlayer.PlaySound("parry");
             soundPlayer.PlayWeaponSound("swordClash");
         }
-        StartCoroutine(ResetParryEffect());
+
+        parryCoroutine = StartCoroutine(ResetParryEffect());
     }
     
     IEnumerator ResetParryEffect()
@@ -215,5 +220,18 @@ public class Entity : MonoBehaviour
         isParried = false;
         Debug.Log("Parry effect ended");
     }
-    
+
+    public bool isReceivingRiposte;
+
+    public void OnRiposte()
+    {
+        isReceivingRiposte = true;
+        StopCoroutine(parryCoroutine);
+    }
+
+    public void OnRiposteEnd()
+    {
+        isReceivingRiposte = false;
+        ApplyDamage(1000);
+    }
 }

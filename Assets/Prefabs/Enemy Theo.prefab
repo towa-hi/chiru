@@ -1140,7 +1140,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 0.619
+  m_Volume: 1
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -1344,6 +1344,7 @@ MonoBehaviour:
   knockbackVector: {x: 0, y: 0, z: 0}
   isParried: 0
   parryDuration: 2
+  isReceivingRiposte: 0
   hearingRadius: 6
   visionRadius: 6
   visionFOV: 180
@@ -1512,10 +1513,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12ad201d57f8b3d4fadbbf15d477f5ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  audioSource: {fileID: 5118198394566167166}
+  bodyAudioSource: {fileID: 5118198394566167166}
+  weaponAudioSource: {fileID: 2575435985800091303}
   parry: {fileID: 8300000, guid: 4bfbdf335d36bab46978bdc34cf60325, type: 3}
   riposte: {fileID: 8300000, guid: 3c25e107ae3c90a4b80535f9fddbd4d9, type: 3}
   swordClash: {fileID: 8300000, guid: 1f57a59a9d10f5047a1149e1ce12d675, type: 3}
+  whiff: {fileID: 8300000, guid: 2596164540ae07541859ef872a1c1f8c, type: 3}
+  playerWhiff: {fileID: 0}
 --- !u!1 &7833292053189908883
 GameObject:
   m_ObjectHideFlags: 0

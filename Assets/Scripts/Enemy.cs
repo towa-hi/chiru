@@ -45,6 +45,10 @@ public class Enemy : Entity
 
     void LookAtTarget()
     {
+        if (isParried)
+        {
+            return;
+        }
         if (currentTarget)
         {
             // Calc dir to target
@@ -52,11 +56,7 @@ public class Enemy : Entity
             directionToTarget.y = 0;
 
             Quaternion lookRotation = Quaternion.LookRotation(directionToTarget);
-            if (!isParried)
-            {
-                transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
-
-            }
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
         }
     }
     
