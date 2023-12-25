@@ -52,8 +52,8 @@ public class Lighsaber : MonoBehaviour
             _frameCount = 0;
         }
 
-        Vector3 tipPosition = _tip.transform.position;
-        Vector3 basePosition = _base.transform.position;
+        Vector3 tipPosition = transform.InverseTransformPoint(_tip.transform.position);
+        Vector3 basePosition = transform.InverseTransformPoint(_base.transform.position);
 
         UpdateVertices(tipPosition, basePosition);
         UpdateTriangles();
@@ -71,7 +71,7 @@ public class Lighsaber : MonoBehaviour
         _meshParent.transform.rotation = Quaternion.identity;
         
         //Init mesh and triangles
-        _meshParent.transform.position = Vector3.zero;
+        //_meshParent.transform.position = Vector3.zero;
         _mesh = new Mesh();
         _meshParent.GetComponent<MeshFilter>().mesh = _mesh;
 
@@ -85,7 +85,7 @@ public class Lighsaber : MonoBehaviour
         //Set starting position for tip and base
         _previousTipPosition = _tip.transform.position;
         _previousBasePosition = _base.transform.position;
-        _meshParent.transform.parent = null;
+        //_meshParent.transform.parent = null;
     }
     void UpdateVertices(Vector3 tipPosition, Vector3 basePosition)
     {
@@ -107,6 +107,11 @@ public class Lighsaber : MonoBehaviour
         _vertices[startIndex + 9] = _previousTipPosition;
         _vertices[startIndex + 10] = tipPosition;
         _vertices[startIndex + 11] = basePosition;
+
+        foreach (var vert in _vertices)
+        {
+            
+        }
     }
 
     void UpdateTriangles()

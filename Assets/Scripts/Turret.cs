@@ -12,7 +12,7 @@ public class Turret : Enemy
     {
 
     }
-
+    /**
     public override void OnDamaged(float damage, Vector3 damageSourcePosition)
     {
         // Debug.Log("im just not gonna do it");
@@ -22,6 +22,7 @@ public class Turret : Enemy
         }
         Debug.Log("I took damage");
     }
+    **/
     
     protected override void PrepareAttackTarget()
     {

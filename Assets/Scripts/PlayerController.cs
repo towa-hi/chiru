@@ -28,7 +28,6 @@ public class PlayerController : Entity
     
     [SerializeField] bool attackTriggerSetFlag;
     [SerializeField] bool parryTriggerSetFlag;
-    [SerializeField] Vector3 knockbackVector;
     
     void Awake()
     {
@@ -77,11 +76,48 @@ public class PlayerController : Entity
             transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, currentRotationSpeed * Time.deltaTime);
         }
     }
-    
+
+    float riposteDistance = 50f;
+    bool isRiposte;
+    Entity targetForRiposte;
     void HandleAttackInputHeld()
     {
         if (input.CharacterControls.Attack.IsPressed())
         {
+            if (isRiposte)
+            {
+                return;
+            }
+            Collider[] hitColliders = Physics.OverlapSphere(transform.position, riposteDistance);
+            Entity closestParriedEntity = null;
+            float closestDistance = float.MaxValue;
+            foreach (Collider collider in hitColliders)
+            {
+                if (collider.CompareTag("EnemyHurtbox"))
+                {
+                    Entity entity = collider.GetComponentInParent<Entity>();
+                    if (entity.isParried)
+                    {
+                        Vector3 directionToEntity = (entity.transform.position - transform.position).normalized;
+                        float angleToEntity = Vector3.Angle(transform.forward, directionToEntity);
+                        float distanceToEntity = Vector3.Distance(transform.position, entity.transform.position);
+                        if (distanceToEntity < closestDistance && angleToEntity < 45) // 45 degrees as an example
+                        {
+                            closestParriedEntity = entity;
+                            closestDistance = distanceToEntity;
+                        }
+                    }
+                }
+            }
+            
+            if (closestParriedEntity != null)
+            {
+                isRiposte = true;
+                targetForRiposte = closestParriedEntity;
+                PerformRiposte();
+                return;
+            }
+            
             AnimatorStateInfo currentState = handsController.GetCurrentAnimatorStateInfo(0);
             // idk why this works 
             if (attackTriggerSetFlag)
@@ -117,6 +153,25 @@ public class PlayerController : Entity
             attackTriggerSetFlag = false;
         }
     }
+
+    void PerformRiposte()
+    {
+        characterController.enabled = false;
+        Vector3 enemyPosition = targetForRiposte.transform.position;
+        Vector3 directionToEnemy = (enemyPosition - transform.position);
+        transform.position = enemyPosition - directionToEnemy * 1.0f;
+        transform.LookAt(enemyPosition);
+        handsController.Play("Riposte");
+        Debug.Log("Riposte started");
+    }
+
+    public void OnRiposteEnd()
+    {
+        Debug.Log("Riposte ended");
+        isRiposte = false;
+        targetForRiposte = null;
+        characterController.enabled = true;
+    }
     
     void HandleLeftActionInputHeld()
     {
@@ -150,6 +205,10 @@ public class PlayerController : Entity
 
     void MovePlayer()
     {
+        if (isRiposte)
+        {
+            return;
+        }
         // set speed depending on if idle
         float speed = meleeWeapon.currentAttackPhase == AttackPhase.IDLE ? idleMovementSpeed : attackingMovementSpeed;
         float stopThreshold = 0.5f;
@@ -174,8 +233,8 @@ public class PlayerController : Entity
             targetVelocity.z = Mathf.Lerp(targetVelocity.z, 0, stopSpeed * Time.deltaTime);
             if (Mathf.Abs(targetVelocity.z) < stopThreshold) targetVelocity.z = 0;
         }
-
         currentVelocity = targetVelocity;
+        // add knockback force
         if (isKnockedBack)
         {
             currentVelocity *= 0.2f;
@@ -183,85 +242,16 @@ public class PlayerController : Entity
         }
         characterController.Move(currentVelocity * Time.deltaTime);
     }
-    
-    public override void OnDamaged(float damage, Vector3 damageSourcePosition)
+
+    public void OnParry()
     {
-        base.OnDamaged(damage, damageSourcePosition);
-        if (!isDead)
-        {
-            isKnockedBack = true;
-            isInvincible = true;
-            ChangeMeshColors(Color.red);
-            StartCoroutine(KnockbackRoutine(damageSourcePosition));
-        }
+        
+    }
+    
+    public override void OnDamaged(GameObject source, float damage, Vector3 damageSourcePosition, float knockbackMagnitude, float knockbackDuration, bool applyInvincibility)
+    {
+        base.OnDamaged(source, damage, damageSourcePosition, knockbackMagnitude, knockbackDuration, applyInvincibility);
         Debug.Log("Player took damage");
 
-    }
-    
-    public float knockbackStrength;
-    public float knockbackDuration;
-    
-    IEnumerator KnockbackRoutine(Vector3 damageSourcePosition)
-    {
-        Vector3 knockbackDirection = (transform.position - damageSourcePosition).normalized;
-        knockbackDirection.y = 0;
-        Vector3 startKnockbackVector = knockbackDirection * knockbackStrength;
-        Vector3 endKnockbackVector = Vector3.zero;
-        
-        float timer = 0;
-        while (timer < knockbackDuration)
-        {
-            timer += Time.deltaTime;
-            knockbackVector = Vector3.Lerp(startKnockbackVector, endKnockbackVector, timer / knockbackDuration);
-            yield return null;
-        }
-        isKnockedBack = false;
-        isInvincible = false;
-        ResetMeshColors();
-        knockbackVector = Vector3.zero;
-        Debug.Log("isInvincible false");
-    }
-
-    Dictionary<Renderer, Color[]> originalColorsMap = new Dictionary<Renderer, Color[]>();
-
-    void ChangeMeshColors(Color color)
-    {
-        originalColorsMap.Clear();
-        var renderers = GetComponentsInChildren<Renderer>();
-        foreach (var renderer in renderers)
-        {
-            Color[] originalColors = new Color[renderer.materials.Length];
-            for (int i = 0; i < renderer.materials.Length; i++)
-            {
-                Material mat = renderer.materials[i];
-                if (mat.HasProperty("_Color"))
-                {
-                    // Store the original color
-                    originalColors[i] = mat.color;
-                    // Change to the new color
-                    mat.color = color;
-                }
-            }
-            originalColorsMap.Add(renderer, originalColors);
-        }
-    }
-
-    void ResetMeshColors()
-    {
-        foreach (var kvp in originalColorsMap)
-        {
-            Renderer renderer = kvp.Key;
-            Color[] originalColors = kvp.Value;
-            for (int i = 0; i < originalColors.Length; i++)
-            {
-                Material mat = renderer.materials[i];
-                if (mat != null && mat.HasProperty("_Color"))
-                {
-                    // Restore the original color
-                    mat.color = originalColors[i];
-                }
-            }
-        }
-        originalColorsMap.Clear();
     }
 }

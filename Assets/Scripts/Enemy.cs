@@ -19,7 +19,6 @@ public class Enemy : Entity
     public Lighsaber attackEffect;
 
     public float attackRange;
-    public float safeDistanceFromObstacle = 2f;
     public float rotationSpeed;
     public Animator handsController;
 
@@ -28,27 +27,45 @@ public class Enemy : Entity
     Vector3 combinedDirection;
     
     float distanceToCurrentTarget = float.MaxValue;
-    
+
+    void Start()
+    {
+        navMeshAgent.updateRotation = false;
+    }
     void Update()
     {
-        AnimatorStateInfo currentState = handsController.GetCurrentAnimatorStateInfo(0);
-        if (currentState.IsName("Idle"))
-        {
-            FindVisibleTargets();
-            EvaluateContexts();
-            MoveTowardsTarget();
-        }
+        FindVisibleTargets();
+        LookAtTarget();
+        EvaluateContexts();
+        MoveTowardsDestination();
         HandleWeaponEffect();
+        
         Debug.DrawLine(transform.position, navMeshAgent.destination, Color.blue);
     }
 
+    void LookAtTarget()
+    {
+        if (currentTarget)
+        {
+            // Calc dir to target
+            Vector3 directionToTarget = (currentTarget.transform.position - transform.position).normalized;
+            directionToTarget.y = 0;
+
+            Quaternion lookRotation = Quaternion.LookRotation(directionToTarget);
+            if (!isParried)
+            {
+                transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
+
+            }
+        }
+    }
+    
     void HandleWeaponEffect()
     {
         // handle weapon effects
         if (attackEffect && meleeWeapon)
         {
-            if (meleeWeapon.currentAttackPhase == AttackPhase.ATTACKING ||
-                meleeWeapon.currentAttackPhase == AttackPhase.WINDDOWN)
+            if (meleeWeapon.currentAttackPhase == AttackPhase.ATTACKING)
             {
                 attackEffect.SetEnabled(true);
             }
@@ -98,8 +115,12 @@ public class Enemy : Entity
         }
     }
 
+    [SerializeField] float walkTowardsTargetWeight;
+    [SerializeField] float separationWeight;
+    
     void EvaluateContexts()
     {
+        List<AIContext> contexts = new List<AIContext>();
         if (currentTarget)
         {
             distanceToCurrentTarget = Vector3.Distance(transform.position, currentTarget.transform.position);
@@ -109,27 +130,37 @@ public class Enemy : Entity
             }
             else
             {
-                // Create a list of contexts
-                List<AIContext> contexts = new List<AIContext>();
-                Vector3 dirToTarget = (currentTarget.transform.position - transform.position).normalized;
-                contexts.Add(new AIContext(dirToTarget, 1.0f)); // Higher weight for target direction
+                Vector3 targetDirection = (currentTarget.transform.position - transform.position).normalized;
+                
+                contexts.Add(new AIContext(targetDirection, walkTowardsTargetWeight)); // Higher weight for target direction
 
                 // Separation context
                 Vector3 separationVector = CalculateSeparationVector();
-                contexts.Add(new AIContext(separationVector, 0.5f)); // Adjust weight as needed
+                contexts.Add(new AIContext(separationVector, separationWeight)); // Adjust weight as needed
 
                 // Combine contexts
                 combinedDirection = CombineContexts(contexts);
-
             }
         }
     }
-    public float minimumDistanceToTarget;
-    void MoveTowardsTarget()
+    
+    void MoveTowardsDestination()
     {
-        if (currentTarget)
+        if (isKnockedBack)
         {
-            if (distanceToCurrentTarget > attackRange)
+            Vector3 newPosition = transform.position + knockbackVector * Time.deltaTime;
+            Debug.DrawLine(transform.position, newPosition);
+            navMeshAgent.Warp(newPosition);
+        }
+        else
+        {
+            if (isParried)
+            {
+                // stop all movement
+                navMeshAgent.isStopped = true;
+                navMeshAgent.ResetPath();
+            }
+            else if (currentTarget && distanceToCurrentTarget > attackRange)
             {
                 navMeshAgent.SetDestination(transform.position + combinedDirection * distanceToCurrentTarget);
                 navMeshAgent.isStopped = false;
@@ -137,13 +168,9 @@ public class Enemy : Entity
             else
             {
                 navMeshAgent.isStopped = true;
+                navMeshAgent.ResetPath();
             }
         }
-        else
-        {
-            navMeshAgent.ResetPath();
-        }
-        
     }
 
     bool isLosingTarget;
@@ -152,7 +179,7 @@ public class Enemy : Entity
         if (!isLosingTarget)
         {
             isLosingTarget = true;
-            Debug.Log(name + " AI: I lost target!");
+            //Debug.Log(name + " AI: I lost target!");
             StartCoroutine(LoseTargetAfterDelay());
         }
     }
@@ -162,7 +189,7 @@ public class Enemy : Entity
         yield return new WaitForSeconds(targetLostDelay);
         currentTarget = null;
         isLosingTarget = false;
-        Debug.Log(name + " AI: I no longer have currentTarget");
+        //Debug.Log(name + " AI: I no longer have currentTarget");
     }
 
     protected virtual void PrepareAttackTarget()
@@ -172,12 +199,6 @@ public class Enemy : Entity
             return;
         }
         
-        // Calc dir to target
-        Vector3 directionToTarget = (currentTarget.transform.position - transform.position).normalized;
-        directionToTarget.y = 0;
-
-        Quaternion lookRotation = Quaternion.LookRotation(directionToTarget);
-        transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
         if (IsFacingTarget() && IsWithinAttackRange())
         {
             AttackTarget();
@@ -201,7 +222,6 @@ public class Enemy : Entity
         }
         Vector3 directionToTarget = (currentTarget.transform.position - transform.position).normalized;
         float angleToTarget = Vector3.Angle(transform.forward, directionToTarget);
-        Debug.Log(angleToTarget);
         return angleToTarget < 10f; // Adjust this value as needed
     }
     
@@ -257,58 +277,20 @@ public class Enemy : Entity
 
         return combinedDirection;
     }
-
-    public float knockbackStrength = 1f;
-    public float knockbackDuration = 1f;
-
-    public override void OnDamaged(float damage, Vector3 damageSourcePosition)
+    
+    public override void OnDamaged(GameObject source, float damage, Vector3 damageSourcePosition, float knockbackMagnitude, float knockbackDuration, bool applyInvincibility)
     {
-        base.OnDamaged(damage, damageSourcePosition);
-        Debug.Log("I took damage");
-        isKnockedBack = true;
-        isInvincible = true;
-        Debug.Log("isInvincible true");
-        handsController.Play("Idle");
-        StartCoroutine(KnockbackRoutine(damageSourcePosition));
+        base.OnDamaged(source, damage, damageSourcePosition, knockbackMagnitude, knockbackDuration, applyInvincibility);
+
+        if (!isDead)
+        {
+            currentTarget = source.GetComponentInParent<Entity>().gameObject;
+            Debug.Log("Set currentTarget to " + currentTarget);
+        }
     }
-
-    IEnumerator KnockbackRoutine(Vector3 damageSourcePosition)
-    {
-        Vector3 knockbackDirection = (transform.position - damageSourcePosition).normalized;
-        Vector3 potentialKnockbackDestination = transform.position + knockbackDirection * knockbackStrength;
-
-        // Check if the destination is on the NavMesh
-        NavMeshHit hit;
-        if (NavMesh.SamplePosition(potentialKnockbackDestination, out hit, knockbackStrength, NavMesh.AllAreas))
-        {
-            // Apply knockback if the destination is valid
-            float timer = 0;
-            while (timer < knockbackDuration)
-            {
-                timer += Time.deltaTime;
-                transform.position = Vector3.Lerp(transform.position, hit.position, timer / knockbackDuration);
-                yield return null;
-            }
-        }
-        else
-        {
-            // If no valid position is found, don't apply knockback
-            Debug.LogWarning("No valid knockback position found on NavMesh.");
-        }
-
-        // Once the knockback is complete, reset the NavMeshAgent's destination
-        if (navMeshAgent.enabled)
-        {
-            navMeshAgent.SetDestination(transform.position);
-        }
-
-        isKnockedBack = false;
-        isInvincible = false;
-        Debug.Log("isInvincible false");
-    }
-
 
 }
+
 public class AIContext
 {
     public Vector3 direction;

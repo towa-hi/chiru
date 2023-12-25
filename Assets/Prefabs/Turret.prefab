@@ -1125,6 +1125,9 @@ MonoBehaviour:
   owner: {fileID: 0}
   debugVisualization: 1
   damage: 10
+  knockbackMagnitude: 0
+  knockbackDuration: 0
+  applyInvincibility: 0
   currentAttackPhase: 0
   debugRenderer: {fileID: 8591481812540155973}
 --- !u!1 &6937206356061447010
@@ -1240,6 +1243,10 @@ MonoBehaviour:
   isDead: 0
   team: 1
   isInvincible: 0
+  isKnockedBack: 0
+  knockbackVector: {x: 0, y: 0, z: 0}
+  isParried: 0
+  parryDuration: 0
   hearingRadius: 0
   visionRadius: 8
   visionFOV: 360
@@ -1255,13 +1262,11 @@ MonoBehaviour:
   meleeWeapon: {fileID: 0}
   attackEffect: {fileID: 0}
   attackRange: 8
-  safeDistanceFromObstacle: 2
   rotationSpeed: 5
   handsController: {fileID: 3586662612709073718}
   minSeparationDistance: 1.5
-  minimumDistanceToTarget: 0
-  knockbackStrength: 0
-  knockbackDuration: 0
+  walkTowardsTargetWeight: 0
+  separationWeight: 0
   projectileSpawner: {fileID: 2430139592788485744}
 --- !u!195 &9151400229011500022
 NavMeshAgent:

@@ -66,7 +66,7 @@ public class Projectile : MonoBehaviour
                 return;
             }
             //Debug.Log("Bullet collided with player " + hurtbox.owner);
-            hurtbox.owner.OnDamaged(damage, owner.transform.position);
+            hurtbox.owner.OnDamaged(owner.gameObject, damage, owner.transform.position, 0, 0, false);
             Deactivate();
         }
     }

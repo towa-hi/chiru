@@ -9,6 +9,10 @@ public class MeleeWeapon : MonoBehaviour
     public bool debugVisualization;
     
     public float damage;
+    public float knockbackMagnitude;
+    public float knockbackDuration;
+    public bool applyInvincibility;
+    
     public AttackPhase currentAttackPhase;
     AttackPhase lastAttackPhase;
     [SerializeField] Renderer debugRenderer;
@@ -66,7 +70,7 @@ public class MeleeWeapon : MonoBehaviour
             return;
         }
         // do damage
-        hurtbox.owner.OnDamaged(damage, owner.transform.position);
+        hurtbox.owner.OnDamaged(gameObject, damage, owner.transform.position, knockbackMagnitude, knockbackDuration, applyInvincibility);
     }
 }
 
