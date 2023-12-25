@@ -24,64 +24,92 @@ public class Entity : MonoBehaviour
     Dictionary<Renderer, Color[]> originalColorsMap = new Dictionary<Renderer, Color[]>();
     public bool isParried;
     public bool isParrying;
-    Coroutine knockbackRoutine;
+    public bool isReceivingRiposte;
+    public float parryDuration;
+    public List<Rigidbody> ragdollParts;
+    public GameObject model;
+    public GameObject ragdoll;
     
+    Coroutine knockbackRoutine;
+    Coroutine parryCoroutine;
     public virtual void OnDamaged(GameObject source, float damage, Vector3 damageSourcePosition, float knockbackMagnitude, float knockbackDuration, bool applyInvincibility)
     {
-        if (!isInvincible)
+        if (isInvincible) return;
+        ApplyDamage(damage, damageSourcePosition);
+        if (isDead) return;
+        if (knockbackMagnitude > 0 && knockbackDuration > 0)
         {
-            ApplyDamage(damage);
-            if (!isDead)
-            {
-                if (knockbackMagnitude == 0 || knockbackDuration == 0)
-                {
-                    return;
-                }
-
-
-                knockbackRoutine = StartCoroutine(KnockbackRoutine(damageSourcePosition, knockbackMagnitude, knockbackDuration,
-                    applyInvincibility));
-            }
+            knockbackRoutine = StartCoroutine(KnockbackRoutine(damageSourcePosition, knockbackMagnitude, knockbackDuration, applyInvincibility));
         }
     }
-
-    public void SetKnockback()
-    {
-        
-    }
-
-
     
-    public void ApplyDamage(float damage)
+    public void ApplyDamage(float damage, Vector3 damageSourcePosition)
     {
         Debug.Log("applying damage");
         hp -= damage;
         if (hp <= 0)
         {
-            OnDeath();
+            OnDeath(damageSourcePosition);
         }
+    }
+
+    void OnDeath(Vector3 damageSourcePosition)
+    {
+        isDead = true;
+        StopAllCoroutines();
+        Debug.Log(gameObject.name + " has died");
+        // TODO: animation for death
+        Animator animator = GetComponent<Animator>();
+        if (animator)
+        {
+            animator.enabled = false;
+        }
+        foreach (GameObject obj in deleteAfterDeath)
+        {
+            Destroy(obj);
+        }
+        if (knockbackRoutine != null)
+        {
+            StopCoroutine(knockbackRoutine);
+        }
+        if (parryCoroutine != null)
+        {
+            StopCoroutine(parryCoroutine);
+        }
+
+        if (model && ragdoll)
+        {
+            model.SetActive(false);
+            ragdoll.SetActive(true);
+            Vector3 knockbackDirection = (transform.position - damageSourcePosition).normalized;
+            knockbackDirection.y = 0;
+            float force = 100f;
+            foreach (var rb in ragdoll.GetComponentsInChildren<Rigidbody>())
+            {
+                rb.isKinematic = false;
+                rb.AddForce(knockbackDirection * force);
+            }
+        }
+
+        Destroy(gameObject, 5f);
     }
     
     IEnumerator KnockbackRoutine(Vector3 damageSourcePosition, float knockbackMagnitude, float knockbackDuration, bool applyInvincibility)
     {
+        // before knockback
         isKnockedBack = true;
-        Debug.Log("KnockbackRoutine started");
+        isInvincible = applyInvincibility;
         Vector3 knockbackDirection = (transform.position - damageSourcePosition).normalized;
         knockbackDirection.y = 0;
         Vector3 startKnockbackVector = knockbackDirection * knockbackMagnitude;
-        if (applyInvincibility)
-        {
-            isInvincible = true;
-        }
         Animator animator = GetComponent<Animator>();
-        Debug.Log("Knockback started");
         if (animator)
         {
             animator.SetTrigger("IsStunned");
-            Debug.Log("IsStunned true");
         }
         ChangeMeshColors(Color.red);
         float knockbackTimer = 0f;
+        // while knockback
         while (knockbackTimer < knockbackDuration)
         {
             knockbackTimer += Time.deltaTime;
@@ -103,28 +131,6 @@ public class Entity : MonoBehaviour
         Debug.Log("Knockback ended");
     }
     
-    void OnDeath()
-    {
-        isDead = true;
-        StopAllCoroutines();
-        Debug.Log(gameObject.name + " has died");
-        // TODO: animation for death
-        foreach (GameObject obj in deleteAfterDeath)
-        {
-            Destroy(obj);
-        }
-        if (knockbackRoutine != null)
-        {
-            StopCoroutine(knockbackRoutine);
-        }
-        if (parryCoroutine != null)
-        {
-            StopCoroutine(parryCoroutine);
-        }
-        Destroy(gameObject, 1f);
-        enabled = false;
-    }
-
     void LerpMeshColorsBack(float lerpValue)
     {
         foreach (var kvp in originalColorsMap)
@@ -134,7 +140,7 @@ public class Entity : MonoBehaviour
             for (int i = 0; i < originalColors.Length; i++)
             {
                 Material mat = renderer.materials[i];
-                if (mat != null && mat.HasProperty("_Color"))
+                if (mat && mat.HasProperty("_Color"))
                 {
                     mat.color = Color.Lerp(Color.red, originalColors[i], lerpValue);
                 }
@@ -152,7 +158,7 @@ public class Entity : MonoBehaviour
             for (int i = 0; i < renderer.materials.Length; i++)
             {
                 Material mat = renderer.materials[i];
-                if (mat.HasProperty("_Color"))
+                if (mat && mat.HasProperty("_Color"))
                 {
                     // Store the original color
                     originalColors[i] = mat.color;
@@ -173,7 +179,7 @@ public class Entity : MonoBehaviour
             for (int i = 0; i < originalColors.Length; i++)
             {
                 Material mat = renderer.materials[i];
-                if (mat != null && mat.HasProperty("_Color"))
+                if (mat && mat.HasProperty("_Color"))
                 {
                     // Restore the original color
                     mat.color = originalColors[i];
@@ -183,32 +189,27 @@ public class Entity : MonoBehaviour
         originalColorsMap.Clear();
     }
 
-    public float parryDuration;
-    public Coroutine parryCoroutine;
     public void OnParried()
     {
-        Debug.Log("I got parried!");
-        
-
-        Animator animator = GetComponent<Animator>();
         SoundPlayer soundPlayer = GetComponent<SoundPlayer>();
         if (soundPlayer)
         {
             soundPlayer.PlayWeaponSound("swordClash");
         }
-
         parryCoroutine = StartCoroutine(ResetParryEffect());
     }
     
     IEnumerator ResetParryEffect()
     {
-        Animator animator = GetComponent<Animator>();
+        // before parryable
         isParried = true;
+        Animator animator = GetComponent<Animator>();
         if (animator)
         {
             animator.SetTrigger("IsStunned");
             Debug.Log("IsStunned true");
         }
+        // while parryable
         yield return new WaitForSeconds(parryDuration);
         isParried = false;
         if (animator)
@@ -216,22 +217,22 @@ public class Entity : MonoBehaviour
             animator.SetTrigger("IsUnStunned");
             Debug.Log("IsStunned true");
         }
-
+        // after parry
         isParried = false;
         Debug.Log("Parry effect ended");
     }
 
-    public bool isReceivingRiposte;
-
-    public void OnRiposte()
+    public void OnReceivingRiposte()
     {
         isReceivingRiposte = true;
         StopCoroutine(parryCoroutine);
+        // isParried remains true
     }
 
-    public void OnRiposteEnd()
+    public void OnReceivingRiposteEnd()
     {
         isReceivingRiposte = false;
-        ApplyDamage(1000);
+        isParried = false;
+        ApplyDamage(1000, GameManager.ins.player.transform.position);
     }
 }

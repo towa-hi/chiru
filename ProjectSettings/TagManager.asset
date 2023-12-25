@@ -15,6 +15,7 @@ TagManager:
   - PlayerParrybox
   - AlwaysRender
   - Hitbox
+  - Ragdoll
   layers:
   - Default
   - TransparentFX

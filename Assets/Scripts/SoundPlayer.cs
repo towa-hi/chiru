@@ -62,8 +62,6 @@ public class SoundPlayer : MonoBehaviour
                 Debug.LogWarning("SoundPlayer: Unknown clip name '" + clip + "'");
                 return; // Exit the method if the clip name is unknown
         }
-
-        Debug.Log("Played sound: " + clip);
         source.Play();
     }
 }

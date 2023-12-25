@@ -182,14 +182,18 @@ MonoBehaviour:
   knockbackVector: {x: 0, y: 0, z: 0}
   isParried: 0
   isParrying: 0
-  parryDuration: 0
   isReceivingRiposte: 0
+  parryDuration: 0
+  ragdollParts: []
+  model: {fileID: 0}
+  ragdoll: {fileID: 0}
   debugVisualization: 1
   characterController: {fileID: 5468403399836768465}
   meleeWeapon: {fileID: 7785543280423950081}
   handsController: {fileID: 8792056309439479154}
   attackEffect: {fileID: 2051746814890462960}
   shieldEffect: {fileID: 9049256673670920187}
+  parrybox: {fileID: 1347477221018351596}
   rotationSpeed: 9
   idleMovementSpeed: 5
   attackingMovementSpeed: 1

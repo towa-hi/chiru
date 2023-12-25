@@ -21,7 +21,7 @@ public class Enemy : Entity
     public float attackRange;
     public float rotationSpeed;
     public Animator handsController;
-
+    public bool ignoresObstacles;
     public float minSeparationDistance = 1.5f;
 
     Vector3 combinedDirection;
@@ -34,6 +34,10 @@ public class Enemy : Entity
     }
     void Update()
     {
+        if (isDead)
+        {
+            return;
+        }
         FindVisibleTargets();
         LookAtTarget();
         EvaluateContexts();
@@ -96,11 +100,13 @@ public class Enemy : Entity
             }
             float distanceToTarget = Vector3.Distance(transform.position, target.position);
             // if target is behind a obstacle
-            if (Physics.Raycast(transform.position, dirToTarget, distanceToTarget, obstacleMask))
+            if (ignoresObstacles)
             {
-                continue;
+                if (Physics.Raycast(transform.position, dirToTarget, distanceToTarget, obstacleMask))
+                {
+                    continue;
+                }
             }
-
             if (target.root.gameObject != currentTarget)
             {
                 currentTarget = target.root.gameObject;
@@ -194,11 +200,15 @@ public class Enemy : Entity
 
     protected virtual void PrepareAttackTarget()
     {
-        if (currentTarget == null)
+        if (!currentTarget)
         {
             return;
         }
-        
+        if (currentTarget.GetComponent<Entity>().isInvincible)
+        {
+            Debug.Log("Waiting for not invincible");
+            return;
+        }
         if (IsFacingTarget() && IsWithinAttackRange())
         {
             AttackTarget();

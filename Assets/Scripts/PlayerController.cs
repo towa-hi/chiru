@@ -15,7 +15,7 @@ public class PlayerController : Entity
     public Animator handsController;
     public Lighsaber attackEffect;
     public Lighsaber shieldEffect;
-    
+    public GameObject parrybox;
     public float rotationSpeed;
     public float idleMovementSpeed;
     public float attackingMovementSpeed;
@@ -30,6 +30,9 @@ public class PlayerController : Entity
     [SerializeField] bool attackTriggerSetFlag;
     [SerializeField] bool parryTriggerSetFlag;
     
+    float riposteDistance = 5f;
+    bool isRiposte;
+    Entity targetForRiposte;
     void Awake()
     {
         input = new PlayerControls();
@@ -55,6 +58,10 @@ public class PlayerController : Entity
 
     void Update()
     {
+        if (isDead)
+        {
+            return;
+        }
         LookAtCursor(); // try to face the cursor
         HandleAttackInputHeld(); // handle attack inputs
         HandleLeftActionInputHeld(); // handle left click actions
@@ -83,9 +90,7 @@ public class PlayerController : Entity
         }
     }
 
-    float riposteDistance = 50f;
-    bool isRiposte;
-    Entity targetForRiposte;
+
     void HandleAttackInputHeld()
     {
         if (input.CharacterControls.Attack.IsPressed())
@@ -167,7 +172,6 @@ public class PlayerController : Entity
     {
         isRiposte = true;
         targetForRiposte = target;
-        targetForRiposte.OnRiposte();
         Vector3 enemyPosition = targetForRiposte.transform.position;
         Vector3 directionToEnemy = (enemyPosition - transform.position).normalized;
         Vector3 newPosition = enemyPosition - directionToEnemy * 1.0f; // Adjust the multiplier as needed
@@ -181,6 +185,8 @@ public class PlayerController : Entity
 
         transform.LookAt(new Vector3(enemyPosition.x, transform.position.y, enemyPosition.z));
         handsController.Play("Riposte");
+        isInvincible = true;
+        targetForRiposte.OnReceivingRiposte();
         Debug.Log("Riposte started");
     }
 
@@ -188,7 +194,8 @@ public class PlayerController : Entity
     {
         Debug.Log("Riposte ended");
         isRiposte = false;
-        targetForRiposte.OnRiposteEnd();
+        isInvincible = false;
+        targetForRiposte.OnReceivingRiposteEnd();
         targetForRiposte = null;
     }
     
@@ -220,9 +227,7 @@ public class PlayerController : Entity
         attackEffect.SetEnabled(meleeWeapon.currentAttackPhase is AttackPhase.ATTACKING or AttackPhase.WINDDOWN);
         shieldEffect.SetEnabled(isParrying);
     }
-   
-
-
+    
     void MovePlayer()
     {
         if (isRiposte)
@@ -263,15 +268,14 @@ public class PlayerController : Entity
         characterController.Move(currentVelocity * Time.deltaTime);
     }
 
-    public void OnParry()
-    {
-        
-    }
-    
     public override void OnDamaged(GameObject source, float damage, Vector3 damageSourcePosition, float knockbackMagnitude, float knockbackDuration, bool applyInvincibility)
     {
         base.OnDamaged(source, damage, damageSourcePosition, knockbackMagnitude, knockbackDuration, applyInvincibility);
         Debug.Log("Player took damage");
-
+        if (isParrying)
+        {
+            isParrying = false;
+            parrybox.SetActive(false);
+        }
     }
 }

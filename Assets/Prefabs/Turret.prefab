@@ -1246,8 +1246,12 @@ MonoBehaviour:
   isKnockedBack: 0
   knockbackVector: {x: 0, y: 0, z: 0}
   isParried: 0
-  parryDuration: 0
+  isParrying: 0
   isReceivingRiposte: 0
+  parryDuration: 0
+  ragdollParts: []
+  model: {fileID: 0}
+  ragdoll: {fileID: 0}
   hearingRadius: 0
   visionRadius: 8
   visionFOV: 360
