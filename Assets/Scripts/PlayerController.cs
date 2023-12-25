@@ -196,6 +196,7 @@ public class PlayerController : Entity
         isRiposte = false;
         isInvincible = false;
         targetForRiposte.OnReceivingRiposteEnd();
+        hp = maxHp;
         targetForRiposte = null;
     }
     

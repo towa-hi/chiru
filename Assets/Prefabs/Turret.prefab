@@ -1269,6 +1269,7 @@ MonoBehaviour:
   attackRange: 8
   rotationSpeed: 5
   handsController: {fileID: 3586662612709073718}
+  ignoresObstacles: 0
   minSeparationDistance: 1.5
   walkTowardsTargetWeight: 0
   separationWeight: 0

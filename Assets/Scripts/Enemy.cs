@@ -220,7 +220,17 @@ public class Enemy : Entity
         AnimatorStateInfo currentState = handsController.GetCurrentAnimatorStateInfo(0);
         if (currentState.IsName("Idle"))
         {
-            handsController.SetTrigger("AttackTrigger");
+            float chance = UnityEngine.Random.Range(0f, 1f);
+            Debug.Log(chance);
+            if (chance >= 0.2f)
+            {
+                handsController.SetTrigger("AttackTrigger");
+            }
+            else
+            {
+                handsController.SetTrigger("SlowAttackTrigger");
+            }
+            
         }
     }
 
@@ -232,7 +242,7 @@ public class Enemy : Entity
         }
         Vector3 directionToTarget = (currentTarget.transform.position - transform.position).normalized;
         float angleToTarget = Vector3.Angle(transform.forward, directionToTarget);
-        return angleToTarget < 10f; // Adjust this value as needed
+        return angleToTarget < 20f; // Adjust this value as needed
     }
     
     public bool IsWithinAttackRange()

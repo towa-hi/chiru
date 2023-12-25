@@ -12,6 +12,9 @@ public class SoundPlayer : MonoBehaviour
     public AudioClip swordClash;
     public AudioClip whiff;
     public AudioClip playerWhiff;
+    public AudioClip hurt;
+    public AudioClip death;
+    public AudioClip playerDeath;
     
     public void PlaySound(string clip)
     {
@@ -50,12 +53,25 @@ public class SoundPlayer : MonoBehaviour
             case "whiff":
                 source.clip = whiff;
                 break;
+            case "slowWhiff":
+                source.pitch = 0.8f;
+                source.clip = whiff;
+                break;
             case "shieldWhiff":
                 source.pitch = 2f;
                 source.clip = whiff;
                 break;
             case "playerWhiff":
                 source.clip = playerWhiff;
+                break;
+            case "hurt":
+                source.clip = hurt;
+                break;
+            case "death":
+                source.clip = death;
+                break;
+            case "playerDeath":
+                source.clip = playerDeath;
                 break;
             default:
                 // Optionally handle unknown clip names

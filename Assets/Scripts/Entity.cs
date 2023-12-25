@@ -39,7 +39,17 @@ public class Entity : MonoBehaviour
         if (isDead) return;
         if (knockbackMagnitude > 0 && knockbackDuration > 0)
         {
+            if (parryCoroutine != null)
+            {
+                StopCoroutine(parryCoroutine);
+            }
             knockbackRoutine = StartCoroutine(KnockbackRoutine(damageSourcePosition, knockbackMagnitude, knockbackDuration, applyInvincibility));
+        }
+
+        SoundPlayer soundPlayer = GetComponent<SoundPlayer>();
+        if (soundPlayer)
+        {
+            soundPlayer.PlaySound("hurt");
         }
     }
     
@@ -77,20 +87,26 @@ public class Entity : MonoBehaviour
             StopCoroutine(parryCoroutine);
         }
 
+        SoundPlayer soundPlayer = GetComponent<SoundPlayer>();
         if (model && ragdoll)
         {
+            soundPlayer.PlaySound("death");
             model.SetActive(false);
             ragdoll.SetActive(true);
             Vector3 knockbackDirection = (transform.position - damageSourcePosition).normalized;
             knockbackDirection.y = 0;
-            float force = 100f;
+            float force = 300f;
             foreach (var rb in ragdoll.GetComponentsInChildren<Rigidbody>())
             {
                 rb.isKinematic = false;
                 rb.AddForce(knockbackDirection * force);
             }
+            
         }
-
+        else
+        {
+            soundPlayer.PlaySound("playerDeath");
+        }
         Destroy(gameObject, 5f);
     }
     
@@ -107,6 +123,7 @@ public class Entity : MonoBehaviour
         {
             animator.SetTrigger("IsStunned");
         }
+        ResetMeshColors();
         ChangeMeshColors(Color.red);
         float knockbackTimer = 0f;
         // while knockback
@@ -209,8 +226,18 @@ public class Entity : MonoBehaviour
             animator.SetTrigger("IsStunned");
             Debug.Log("IsStunned true");
         }
+        ResetMeshColors();
+        ChangeMeshColors(Color.red);
         // while parryable
-        yield return new WaitForSeconds(parryDuration);
+        float parriedTimer = 0f;
+        while (parriedTimer < parryDuration)
+        {
+            parriedTimer += Time.deltaTime;
+            // make flash red using sine
+            float lerpFactor = Mathf.Abs(Mathf.Sin(parriedTimer / parryDuration * Mathf.PI));
+            LerpMeshColorsBack(lerpFactor);
+            yield return null;
+        }
         isParried = false;
         if (animator)
         {
@@ -218,6 +245,7 @@ public class Entity : MonoBehaviour
             Debug.Log("IsStunned true");
         }
         // after parry
+        ResetMeshColors();
         isParried = false;
         Debug.Log("Parry effect ended");
     }
@@ -225,6 +253,7 @@ public class Entity : MonoBehaviour
     public void OnReceivingRiposte()
     {
         isReceivingRiposte = true;
+        ResetMeshColors();
         StopCoroutine(parryCoroutine);
         // isParried remains true
     }

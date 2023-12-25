@@ -15,6 +15,7 @@ public class CameraManager : MonoBehaviour
         {
             Vector3 newFocus = FindSweetSpot();
             transform.position = Vector3.Lerp(transform.position, newFocus + verticalOffset, lerpSpeed * Time.deltaTime);
+            transform.position = new Vector3(transform.position.x, 0, transform.position.z);
         }
     }
 
