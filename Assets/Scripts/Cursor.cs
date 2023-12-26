@@ -33,8 +33,8 @@ public class Cursor : MonoBehaviour
         mousePosition += new Vector3(mouseDelta.x, mouseDelta.y, 0) * mouseSensitivity;
 
         // Clamp the mousePosition to the screen bounds minus edgeBuffer
-        mousePosition.x = Mathf.Clamp(mousePosition.x, edgeBuffer, Screen.width - edgeBuffer);
-        mousePosition.y = Mathf.Clamp(mousePosition.y, edgeBuffer, Screen.height - edgeBuffer);
+        mousePosition.x = Mathf.Clamp(mousePosition.x, edgeBuffer, 320 - edgeBuffer);
+        mousePosition.y = Mathf.Clamp(mousePosition.y, edgeBuffer, 240 - edgeBuffer);
 
         // Convert the accumulated position to a world point
         Ray ray = mainCamera.ScreenPointToRay(mousePosition);

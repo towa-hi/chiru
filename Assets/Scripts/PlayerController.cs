@@ -31,7 +31,7 @@ public class PlayerController : Entity
     [SerializeField] bool parryTriggerSetFlag;
     
     float riposteDistance = 5f;
-    bool isRiposte;
+    public bool isRiposte;
     Entity targetForRiposte;
     void Awake()
     {
