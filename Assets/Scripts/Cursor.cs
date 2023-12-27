@@ -27,7 +27,7 @@ public class Cursor : MonoBehaviour
     void MoveToCursor()
     {
         // Read the mouse delta
-        Vector2 mouseDelta = Mouse.current.delta.ReadValue();
+        Vector2 mouseDelta = Mouse.current.delta.ReadValue() * 0.1f;
 
         // Accumulate the delta to the mousePosition
         mousePosition += new Vector3(mouseDelta.x, mouseDelta.y, 0) * mouseSensitivity;

@@ -10,6 +10,7 @@ public class Enemy : Entity
     public float visionFOV;
     public LayerMask targetMask;
     public LayerMask obstacleMask;
+    public BurstFire burstFire;
     
     public GameObject currentTarget;
     public float targetLostDelay = 5f;
@@ -24,6 +25,8 @@ public class Enemy : Entity
     public bool ignoresObstacles;
     public float minSeparationDistance = 1.5f;
 
+    public bool isRanged;
+    bool isReadyToFire = true;
     Vector3 combinedDirection;
     
     float distanceToCurrentTarget = float.MaxValue;
@@ -44,7 +47,7 @@ public class Enemy : Entity
         MoveTowardsDestination();
         HandleWeaponEffect();
         
-        Debug.DrawLine(transform.position, navMeshAgent.destination, Color.blue);
+        //Debug.DrawLine(transform.position, navMeshAgent.destination, Color.blue);
     }
 
     void LookAtTarget()
@@ -82,6 +85,9 @@ public class Enemy : Entity
     
     void FindVisibleTargets()
     {
+        currentTarget = GameManager.ins.player;
+        bool targetFound = true;
+        /**
         Collider[] targetsInViewRadius = Physics.OverlapSphere(transform.position, visionRadius, targetMask);
         bool targetFound = false;
         for (int i = 0; i < targetsInViewRadius.Length; i++)
@@ -114,6 +120,7 @@ public class Enemy : Entity
             }
             targetFound = true;
         }
+        **/
         // if no targets within vision 
         if (!targetFound && currentTarget)
         {
@@ -130,8 +137,10 @@ public class Enemy : Entity
         if (currentTarget)
         {
             distanceToCurrentTarget = Vector3.Distance(transform.position, currentTarget.transform.position);
+            
             if (distanceToCurrentTarget <= attackRange)
             {
+                // add strafing context
                 PrepareAttackTarget();
             }
             else
@@ -155,7 +164,7 @@ public class Enemy : Entity
         if (isKnockedBack)
         {
             Vector3 newPosition = transform.position + knockbackVector * Time.deltaTime;
-            Debug.DrawLine(transform.position, newPosition);
+            //Debug.DrawLine(transform.position, newPosition);
             navMeshAgent.Warp(newPosition);
         }
         else
@@ -166,6 +175,10 @@ public class Enemy : Entity
                 navMeshAgent.isStopped = true;
                 navMeshAgent.ResetPath();
             }
+            else if (isMovingToShootingPosition)
+            {
+                
+            }
             else if (currentTarget && distanceToCurrentTarget > attackRange)
             {
                 navMeshAgent.SetDestination(transform.position + combinedDirection * distanceToCurrentTarget);
@@ -173,6 +186,7 @@ public class Enemy : Entity
             }
             else
             {
+                // set destination to strafe around the target
                 navMeshAgent.isStopped = true;
                 navMeshAgent.ResetPath();
             }
@@ -209,19 +223,62 @@ public class Enemy : Entity
             Debug.Log("Waiting for not invincible");
             return;
         }
+        
         if (IsFacingTarget() && IsWithinAttackRange())
         {
-            AttackTarget();
+            if (isRanged)
+            {
+                RangedAttackTarget();
+            }
+            else
+            {
+                AttackTarget();
+            }
         }
     }
 
+    bool isMovingToShootingPosition;
+    
+    void RangedAttackTarget()
+    {
+        if (currentTarget && isReadyToFire)
+        {
+            Vector3 shootingPosition = FindShootingPosition(currentTarget.transform.position);
+            StartCoroutine(MoveToPositionAndFire(shootingPosition));
+        }
+    }
+    IEnumerator MoveToPositionAndFire(Vector3 position)
+    {
+        // Move to the shooting position
+        navMeshAgent.SetDestination(position);
+        isMovingToShootingPosition = true;
+        while (Vector3.Distance(transform.position, position) > 1.0f) // Adjust threshold as needed
+        {
+            //Debug.DrawLine(transform.position, position);
+            yield return null;
+        }
+
+        isMovingToShootingPosition = false;
+        // Fire at the target
+        if (burstFire != null)
+        {
+            burstFire.StartFiring();
+            StartCoroutine(FiringCooldown());
+        }
+    }
+    IEnumerator FiringCooldown()
+    {
+        isReadyToFire = false;
+        yield return new WaitForSeconds(burstFire.timeBetweenBursts);
+        isReadyToFire = true;
+    }
+    
     protected virtual void AttackTarget()
     {
         AnimatorStateInfo currentState = handsController.GetCurrentAnimatorStateInfo(0);
         if (currentState.IsName("Idle"))
         {
             float chance = UnityEngine.Random.Range(0f, 1f);
-            Debug.Log(chance);
             if (chance >= 0.2f)
             {
                 handsController.SetTrigger("AttackTrigger");
@@ -309,6 +366,40 @@ public class Enemy : Entity
         }
     }
 
+    Vector3 FindShootingPosition(Vector3 targetPosition)
+    {
+        // First, check if the current position has a clear line of sight
+        if (!Physics.Linecast(transform.position, targetPosition, obstacleMask))
+        {
+            return transform.position; // Current position is already good
+        }
+
+        // Define a range within which the enemy looks for a shooting spot
+        float searchRadius = 10.0f; // Adjust as needed
+        Vector3 bestPosition = transform.position;
+        float closestDistanceSqr = Mathf.Infinity;
+
+        // Check points around the enemy within the search radius
+        for (float angle = 0; angle < 360; angle += 20) // Adjust step for finer search
+        {
+            Vector3 direction = Quaternion.Euler(0, angle, 0) * transform.forward;
+            Vector3 potentialPosition = transform.position + direction * searchRadius;
+
+            // Check if this position has a clear line of sight to the target
+            if (!Physics.Linecast(potentialPosition, targetPosition, obstacleMask))
+            {
+                float distanceSqr = (potentialPosition - targetPosition).sqrMagnitude;
+                if (distanceSqr < closestDistanceSqr)
+                {
+                    closestDistanceSqr = distanceSqr;
+                    bestPosition = potentialPosition;
+                }
+            }
+        }
+
+        return bestPosition;
+    }
+    
 }
 
 public class AIContext

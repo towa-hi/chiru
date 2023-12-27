@@ -15,6 +15,7 @@ public class SoundPlayer : MonoBehaviour
     public AudioClip hurt;
     public AudioClip death;
     public AudioClip playerDeath;
+    public AudioClip gunshot;
     
     public void PlaySound(string clip)
     {
@@ -72,6 +73,9 @@ public class SoundPlayer : MonoBehaviour
                 break;
             case "playerDeath":
                 source.clip = playerDeath;
+                break;
+            case "gunshot":
+                source.clip = gunshot;
                 break;
             default:
                 // Optionally handle unknown clip names

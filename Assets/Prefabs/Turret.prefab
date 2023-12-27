@@ -1261,6 +1261,7 @@ MonoBehaviour:
   obstacleMask:
     serializedVersion: 2
     m_Bits: 64
+  burstFire: {fileID: 0}
   currentTarget: {fileID: 0}
   targetLostDelay: 5
   navMeshAgent: {fileID: 9151400229011500022}
@@ -1271,6 +1272,7 @@ MonoBehaviour:
   handsController: {fileID: 3586662612709073718}
   ignoresObstacles: 0
   minSeparationDistance: 1.5
+  isRanged: 0
   walkTowardsTargetWeight: 0
   separationWeight: 0
   projectileSpawner: {fileID: 2430139592788485744}

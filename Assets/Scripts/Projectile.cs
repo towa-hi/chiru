@@ -39,33 +39,33 @@ public class Projectile : MonoBehaviour
     {
         if (gameObject.activeInHierarchy)
         {
-            //Debug.Log("other: " + other.gameObject + " isactive: " + gameObject.activeSelf);
+            Debug.Log("other: " + other.gameObject + " isactive: " + gameObject.activeSelf);
             if (other.CompareTag("Wall"))
             {
-                //Debug.Log("Bullet collided with wall " + other.gameObject);
+                Debug.Log("Bullet collided with wall " + other.gameObject);
                 Deactivate();
                 return;
             }
             Hurtbox hurtbox = other.gameObject.GetComponent<Hurtbox>();
             if (!hurtbox)
             {
-                //Debug.Log("Bullet passed through obj " + other.gameObject);
+                Debug.Log("Bullet passed through obj " + other.gameObject);
                 return;
             }
             // if is shooter
             if (hurtbox.owner == owner)
             {
-                //Debug.Log("Bullet passed through self " + hurtbox.owner);
+                Debug.Log("Bullet passed through self " + hurtbox.owner);
                 return;
             }
             // if is same team
             if (hurtbox.owner.team == owner.team)
             {
-                //Debug.Log("Bullet collided with friendly " + hurtbox.owner);
+                Debug.Log("Bullet collided with friendly " + hurtbox.owner);
                 Deactivate();
                 return;
             }
-            //Debug.Log("Bullet collided with player " + hurtbox.owner);
+            Debug.Log("Bullet collided with player " + hurtbox.owner);
             hurtbox.owner.OnDamaged(owner.gameObject, damage, owner.transform.position, 0, 0, false);
             Deactivate();
         }

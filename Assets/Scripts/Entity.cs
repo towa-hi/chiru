@@ -106,7 +106,11 @@ public class Entity : MonoBehaviour
         else
         {
             soundPlayer.PlaySound("playerDeath");
+            gameObject.SetActive(false);
+            GameManager.ins.OnDeath();
         }
+
+        GameManager.ins.enemiesThisLevel.Remove(this);
         Destroy(gameObject, 5f);
     }
     

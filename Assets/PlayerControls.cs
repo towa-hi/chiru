@@ -71,6 +71,24 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""New action"",
+                    ""type"": ""Button"",
+                    ""id"": ""76865d3b-fdf1-4ce8-837b-82abca66e0bd"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Space"",
+                    ""type"": ""Button"",
+                    ""id"": ""02d1da4a-6895-49b9-860b-635b03fc6731"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -172,6 +190,28 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""Left Action"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c0a7ddad-a60a-4314-aec9-72c1aa4344b1"",
+                    ""path"": """",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""New action"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""c354648b-67db-4ef4-827b-322c74505b13"",
+                    ""path"": ""<Keyboard>/space"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Space"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -185,6 +225,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_CharacterControls_MouseControl = m_CharacterControls.FindAction("MouseControl", throwIfNotFound: true);
         m_CharacterControls_Attack = m_CharacterControls.FindAction("Attack", throwIfNotFound: true);
         m_CharacterControls_LeftAction = m_CharacterControls.FindAction("Left Action", throwIfNotFound: true);
+        m_CharacterControls_Newaction = m_CharacterControls.FindAction("New action", throwIfNotFound: true);
+        m_CharacterControls_Space = m_CharacterControls.FindAction("Space", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -251,6 +293,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_CharacterControls_MouseControl;
     private readonly InputAction m_CharacterControls_Attack;
     private readonly InputAction m_CharacterControls_LeftAction;
+    private readonly InputAction m_CharacterControls_Newaction;
+    private readonly InputAction m_CharacterControls_Space;
     public struct CharacterControlsActions
     {
         private @PlayerControls m_Wrapper;
@@ -260,6 +304,8 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @MouseControl => m_Wrapper.m_CharacterControls_MouseControl;
         public InputAction @Attack => m_Wrapper.m_CharacterControls_Attack;
         public InputAction @LeftAction => m_Wrapper.m_CharacterControls_LeftAction;
+        public InputAction @Newaction => m_Wrapper.m_CharacterControls_Newaction;
+        public InputAction @Space => m_Wrapper.m_CharacterControls_Space;
         public InputActionMap Get() { return m_Wrapper.m_CharacterControls; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -284,6 +330,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @LeftAction.started += instance.OnLeftAction;
             @LeftAction.performed += instance.OnLeftAction;
             @LeftAction.canceled += instance.OnLeftAction;
+            @Newaction.started += instance.OnNewaction;
+            @Newaction.performed += instance.OnNewaction;
+            @Newaction.canceled += instance.OnNewaction;
+            @Space.started += instance.OnSpace;
+            @Space.performed += instance.OnSpace;
+            @Space.canceled += instance.OnSpace;
         }
 
         private void UnregisterCallbacks(ICharacterControlsActions instance)
@@ -303,6 +355,12 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @LeftAction.started -= instance.OnLeftAction;
             @LeftAction.performed -= instance.OnLeftAction;
             @LeftAction.canceled -= instance.OnLeftAction;
+            @Newaction.started -= instance.OnNewaction;
+            @Newaction.performed -= instance.OnNewaction;
+            @Newaction.canceled -= instance.OnNewaction;
+            @Space.started -= instance.OnSpace;
+            @Space.performed -= instance.OnSpace;
+            @Space.canceled -= instance.OnSpace;
         }
 
         public void RemoveCallbacks(ICharacterControlsActions instance)
@@ -327,5 +385,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnMouseControl(InputAction.CallbackContext context);
         void OnAttack(InputAction.CallbackContext context);
         void OnLeftAction(InputAction.CallbackContext context);
+        void OnNewaction(InputAction.CallbackContext context);
+        void OnSpace(InputAction.CallbackContext context);
     }
 }

@@ -386,9 +386,10 @@ MonoBehaviour:
   swordClash: {fileID: 8300000, guid: 1f57a59a9d10f5047a1149e1ce12d675, type: 3}
   whiff: {fileID: 8300000, guid: 2596164540ae07541859ef872a1c1f8c, type: 3}
   playerWhiff: {fileID: 8300000, guid: c822b1f353cb37849a0a19847ce75afc, type: 3}
-  hurt: {fileID: 8300000, guid: 34ec721689568a34c81bbbd80b6f3e53, type: 3}
+  hurt: {fileID: 8300000, guid: c784b173355920e428e4ca2ce9f8db8e, type: 3}
   death: {fileID: 0}
   playerDeath: {fileID: 8300000, guid: 288ba9e84ece3174c8d4d966fd8c2a9b, type: 3}
+  gunshot: {fileID: 0}
 --- !u!1 &1200781761707307949
 GameObject:
   m_ObjectHideFlags: 0
@@ -1436,7 +1437,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &3729471716739267404
 Transform:
   m_ObjectHideFlags: 0
