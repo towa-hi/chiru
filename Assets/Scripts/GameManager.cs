@@ -15,9 +15,12 @@ public class GameManager : MonoBehaviour
     public GameObject enemyCapipiPrefab;
 
     public List<Spawner> spawners;
+
+    public AudioSource music;
     
     public GameObject cursor;
     public GameObject player;
+    bool gameWon = false;
     void Awake()
     {
         if (ins == null)
@@ -62,6 +65,10 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        if (gameWon)
+        {
+            return;
+        }
         if (level != 0 && enemiesThisLevel.TrueForAll(enemy => !enemy || enemy.isDead))
         {
             if (level < maxLevel)
@@ -72,10 +79,18 @@ public class GameManager : MonoBehaviour
             {
                 // Show win message
                 Debug.Log("You won the game!");
+                OnWin();
             }
         }
     }
 
+    void OnWin()
+    {
+        GuiController guiController = FindRootObjectWithComponent<GuiController>();
+        guiController.OnWin();
+        music.mute = true;
+        Time.timeScale = 0;
+    }
     public void OnDeath()
     {
         // show death canvas
@@ -149,35 +164,73 @@ public class GameManager : MonoBehaviour
         switch (newLevel)
         {
             case 1:
-                RandomlySpawn(0, 1);
+                RandomlySpawn(3, 0);
                 break;
             case 2:
-                RandomlySpawn(4, 1);
+                RandomlySpawn(5, 1);
                 break;
             case 3:
-                RandomlySpawn(8, 3);
+                RandomlySpawn(8, 2);
                 break;
             case 4:
-                RandomlySpawn(12, 6);
+                RandomlySpawn(12, 4);
                 break;
         }
     }
 
     public void RandomlySpawn(int theos, int capipis)
     {
-        List<Spawner> availableSpawners = new List<Spawner>(spawners);
-        for (int i = 0; i < theos + capipis; i++)
+        if (player == null)
         {
-            if (availableSpawners.Count == 0) break;
-
-            int spawnerIndex = Random.Range(0, availableSpawners.Count);
-            Spawner selectedSpawner = availableSpawners[spawnerIndex];
-            availableSpawners.RemoveAt(spawnerIndex);
-
-            GameObject enemyPrefab = i < theos ? enemyTheoPrefab : enemyCapipiPrefab;
-            GameObject enemy = Instantiate(enemyPrefab, selectedSpawner.spawnPoint.transform.position, Quaternion.identity);
-            enemiesThisLevel.Add(enemy.GetComponent<Entity>());
+            Debug.LogError("Player object not found.");
+            return;
         }
+
+        // Sort spawners based on distance from the player (farthest first)
+        spawners.Sort((a, b) => 
+            Vector3.Distance(b.transform.position, player.transform.position)
+                .CompareTo(Vector3.Distance(a.transform.position, player.transform.position)));
+
+        HashSet<Spawner> selectedSpawners = new HashSet<Spawner>();
+
+        // Spawn Theos
+        for (int i = 0; i < theos; i++)
+        {
+            Spawner spawner = GetRandomSpawner(selectedSpawners);
+            if (spawner != null)
+            {
+                GameObject theo = Instantiate(enemyTheoPrefab, spawner.spawnPoint.transform.position, Quaternion.identity);
+                enemiesThisLevel.Add(theo.GetComponent<Entity>());
+                selectedSpawners.Add(spawner);
+            }
+        }
+
+        // Spawn Capipis
+        for (int i = 0; i < capipis; i++)
+        {
+            Spawner spawner = GetRandomSpawner(selectedSpawners);
+            if (spawner != null)
+            {
+                GameObject capipi = Instantiate(enemyCapipiPrefab, spawner.spawnPoint.transform.position, Quaternion.identity);
+                enemiesThisLevel.Add(capipi.GetComponent<Entity>());
+                selectedSpawners.Add(spawner);
+            }
+        }
+    }
+
+// Helper method to get a random spawner that hasn't been selected yet
+    Spawner GetRandomSpawner(HashSet<Spawner> selectedSpawners)
+    {
+        List<Spawner> availableSpawners = new List<Spawner>(spawners);
+        availableSpawners.RemoveAll(s => selectedSpawners.Contains(s));
+
+        if (availableSpawners.Count > 0)
+        {
+            int randomIndex = Random.Range(0, availableSpawners.Count);
+            return availableSpawners[randomIndex];
+        }
+
+        return null;
     }
     
     public void ContinueSavedGame()

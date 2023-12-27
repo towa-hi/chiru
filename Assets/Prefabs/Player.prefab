@@ -196,7 +196,7 @@ MonoBehaviour:
   shieldEffect: {fileID: 9049256673670920187}
   parrybox: {fileID: 1347477221018351596}
   rotationSpeed: 9
-  idleMovementSpeed: 5
+  idleMovementSpeed: 7
   attackingMovementSpeed: 1
   stopSpeed: 10
   minRotationDistance: 0.2

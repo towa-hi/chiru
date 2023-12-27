@@ -50,7 +50,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 10
   lifetime: 2
-  damage: 10
+  damage: 5
   angle: {x: 0, y: 0, z: 0}
   owner: {fileID: 0}
 --- !u!54 &5318064580258792171

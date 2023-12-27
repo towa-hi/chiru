@@ -7,6 +7,7 @@ using UnityEngine.UI;
 public class GuiController : MonoBehaviour
 {
     public GameObject deathPanel;
+    public GameObject winPanel;
     public GameObject healthBar;
     public Button restartButton;
 
@@ -34,6 +35,11 @@ public class GuiController : MonoBehaviour
         deathPanel.SetActive(true);
     }
 
+    public void OnWin()
+    {
+        winPanel.SetActive(true);
+    }
+    
     public void OnRestartButton()
     {
         Debug.Log("space pressed");
